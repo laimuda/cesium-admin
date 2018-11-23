@@ -1,0 +1,172 @@
+@import url( './params.less' );
+@import url( './base.less' );
+@import url( './mixins.less' );
+@import url( '../../src/UI/toolbar.less' );
+@import url( './loadingBar.less' );
+
+body {
+    flex-flow: column;
+    display:flex;
+}
+
+#sandzMap, #dtMap, #cesiumContainer {
+    .setWH();
+}
+
+#canvas {
+    .setWH();
+    background-color: #000;
+}
+
+#sandzMap {
+    .setRelative();
+
+    .mask {
+        .setWH();
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 5;
+    }
+}
+
+#dtMap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: @zIndex;
+}
+
+#content {
+    background-color: #4d4d4d;
+}
+
+/* 删除地图底部文字 */
+.cesium-viewer-bottom {
+    display: none;
+}
+
+/* 包裹层 */
+.wrap {
+    flex: 1;
+}
+
+/* 分界线 */
+#fjx {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 6px;
+    width: 100%;
+    background-color: #E0E0E0;
+    z-index: 3;
+    cursor: n-resize;
+}
+
+/* 右键菜单 */
+body {
+    .setRelative();
+}
+.right-menu .item:hover {
+    color: #fff;
+    background-color: rgb(30, 144, 255);
+}
+.right-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: scale(0);
+    width: max-content;
+    overflow: inherit;
+    transform-origin: 0 0;
+    padding: 0;
+    padding-right: 10px;
+    background-color: transparent;
+    box-sizing: border-box;
+    height: auto;
+    z-index: 6;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
+
+    ul {
+        border: 1px solid #ccc;
+        border-top-style: none;
+        background-color: #fff;
+    }
+
+    .item {
+        border-top: 1px solid #ccc;
+        width: 75px;
+        position: relative;
+        top: 0;
+        left: 0;
+        padding-left: 20px;
+        height: 30px;
+        box-sizing: border-box;
+        color: #989898;
+        font-size: 12px;
+        text-align: left;
+        text-indent: 12px;
+        line-height: 30px;
+    }
+
+    .item::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        width: 14px;
+        height: 14px;
+        transform: translateY(-50%);
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+    }
+}
+.right-menu.active {
+    transition: transform .3s;
+    transform: scale(1);
+    moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select:none;
+    -khtml-user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
+/* 视频监控 */
+.vctl.active {
+    transition: all .3s;
+    transform: scale(1);
+}
+.vctl {
+    box-sizing: border-box;
+    transform: scale(0);
+    transform-origin: center center;
+    width: 2000px;
+    height: 2000px;
+    background-color: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+
+    li {
+        position: absolute;
+        top: 0;
+        left: 0;
+        .setWH( 20px );
+        display: block;
+    }
+
+    img {
+        .setWH( 20px );
+        display: block;
+    }
+}

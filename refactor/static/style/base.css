@@ -1,0 +1,63 @@
+body,
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: #fff;
+}
+body {
+  background-color: #F1F1F1;
+  overflow: hidden;
+  padding: 15px;
+  padding-bottom: 11px;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+}
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+input[type=checkbox] {
+  padding: 0;
+  margin: 0;
+}
+/* 辅助类 */
+.znv-unselect {
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.znv-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+.znv-disable::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
