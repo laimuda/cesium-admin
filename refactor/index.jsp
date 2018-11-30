@@ -5,8 +5,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1,
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1,
             user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 
@@ -96,7 +95,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="item" data-key="2" data-item="">进度数据</li>
+                    <li class="item" data-key="2" data-item="showGcjd">进度数据</li>
                 </ul>
             </div>
         </div>
@@ -173,7 +172,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="item" data-key="2" data-item="">检测数据</li>
+                    <li class="item" data-key="2" data-item="showJcsj">检测数据</li>
                 </ul>
             </div>
         </div>
@@ -185,9 +184,121 @@
         </div>
 
         <!-- insar点 -->
-        <div class="btn-item icon insar">
+        <div class="btn-item icon insar" data-item="isInsarClick">
             <div class="mask"></div>
             <button class="btn">insar点</button>
+            <div class="opts more o-insar">
+                <div class="tit clearfix">
+                    <div class="tit-item all item">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        全选
+                    </div>
+                    <div class="tit-item reverse item">
+                        <span class='squaredTwo'>
+                            <input type="checkbox">
+                            <label class="check-icon"></label>
+                        </span>
+                        反选
+                    </div>
+                    <div class="tit-item"></div>
+                </div>
+                <ul class="sels">
+                    <li class="item" data-key="1" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        一级 (&lt; -8.0)
+                    </li>
+                    <li class="item" data-key="2" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        二级 (-8.0 - -6.0)
+                    </li>
+                    <li class="item" data-key="3" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        三级 (-6.0 - -4.0)
+                    </li>
+                    <li class="item" data-key="4" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        四级 (-4.0 - -2.0)
+                    </li>
+                    <li class="item" data-key="5" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        五级 (-2.0 - 0)
+                    </li>
+                    <li class="item" data-key="6" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        六级 (0 - 2.0)
+                    </li>
+                    <li class="item" data-key="7" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        七级 (2.0 - 4.0)
+                    </li>
+                    <li class="item" data-key="8" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        八级 (4.0 - 6.0)
+                    </li>
+                    <li class="item" data-key="9" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        九级 (6.0 - 8.0)
+                    </li>
+                    <li class="item" data-key="10" data-item="chooseInsarGrade">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        十级 ( > 8.0)
+                    </li>
+                </ul>
+            </div>
+            <div class="opts more o-underground">
+                <div class="tit clearfix">
+                    <div class="tit-item all item">
+                        <span class='squaredTwo'>
+                            <input type="checkbox" checked>
+                            <label class="check-icon"></label>
+                        </span>
+                        全选
+                    </div>
+                    <div class="tit-item reverse item">
+                        <span class='squaredTwo'>
+                            <input type="checkbox">
+                            <label class="check-icon"></label>
+                        </span>
+                        反选
+                    </div>
+                    <div class="tit-item"></div>
+                </div>
+                <ul class="sels">
+                </ul>
+            </div>
         </div>
 
         <!-- 视频监控-->
@@ -200,6 +311,13 @@
         <div class="btn-item icon tool">
             <div class="mask"></div>
             <button class="btn">工具箱</button>
+            <div class="opts select">
+                <ul>
+                    <li class="item" data-key="0" data-item="lsClick">量算</li>
+                    <li class="item" data-key="1" data-item="pickup">坐标拾取</li>
+                    <li class="item" data-key="2" data-item="location">坐标定位</li>
+                </ul>
+            </div>
         </div>
 
         <!-- 全屏 -->
@@ -209,7 +327,7 @@
     </div>
 
     <!-- 地图容器 -->
-    <div class="wrap" oncontextmenu="event.preventDefault()">
+    <div class="wrap">
 
         <!-- longding -->
         <div id='loadingbar' class="spinner">
@@ -248,18 +366,177 @@
             </ul>
         </div>
 
-
         <div id="sandzMap" class="fullSize">
             <div class="mask"></div>
+
+            <!-- 量算容器 -->
+            <div id="measure" class="map-tool">
+                <button class="btn-item" id="distance" data-item="lsDis">测距</button>
+                <button class="btn-item" id="area" data-item="lsArea">测面</button>
+                <button class="btn-item" id="height" data-item="lsHeight">测高</button>
+                <button class="btn-item" id="clear" data-item="lsClear">清除</button>
+                <select id="selOpt1" class="select">
+                    <option selected value="0">空间量算</option>
+                    <option value="1">贴地量算</option>
+                </select>
+                <button class="close" data-item="lsClose"></button>
+            </div>
+
+            <!-- 坐标拾取 -->
+            <div id="zbsq" class="map-tool">
+                纬度: <span class="w">0</span>
+                经度: <span class="j">0</span>
+                高度: <span class="h">0</span>
+                <button class="btn-item copy" data-item="pickupCoyp">复制</button>
+                <button class="close" data-item="pickupClose"></button>
+            </div>
+
+            <!-- 坐标提示 -->
+            <label for="" class="label-tip">0,0,0</label>
+
+            <!-- 坐标定位 -->
+            <div id="zbdw" class="map-tool">
+                <input type="text" autofocus placeholder="输入纬度,经度,高度">
+                <button class="btn-item submit" data-item="locationSub">确定</button>
+                <button class="btn-item clear" data-item="locationCan">清除</button>
+                <button class="close" data-item="locationClose"></button>
+            </div>
 
             <!-- Unity -->
             <iframe id="content" src="" frameborder="0" style="width:100%; height:100%"></iframe>
 
             <div id="fjx"></div>
 
+            <!-- tips bubble -->
+            <blockquote id="bubble" class="bubble clearfix">
+                <h4 id="title"></h4>
+                <div id="des" class="word"></div>
+            </blockquote>
+
+            <!-- 工程进度数据 -->
+            <div id="gcjd" class="show-data">
+                <div class="container">
+                    <h4 class="tit">工程进度<span class="icon" data-item="hideGcjd"></span></h4>
+                    <div class="clearfix centent">
+                        <div class="item">
+                            <div class="tit">
+                                总进度
+                                <span class="x">%</span><span class="num">0</span>
+                            </div>
+                            <div class="pro">
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="tit">
+                                西明挖段进度
+                                <span class="x">%</span><span class="num">0</span>
+                            </div>
+                            <div class="pro">
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="tit">
+                                东明挖断进度
+                                <span class="x">%</span><span class="num">0</span>
+                            </div>
+                            <div class="pro">
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="tit">
+                                盾构段进度
+                                <span class="x">%</span><span class="num">0</span>
+                            </div>
+                            <div class="pro">
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 检测数据 -->
+            <div id="jcsj" class="show-data">
+                <div class="container">
+                    <h4 class="tit">检测数据<span class="icon" data-item="hideJcsj"></span></h4>
+                    <div class="clearfix centent">
+                        <div class="item topC">
+                            <div class="tit">第三方监测</div>
+                            <div class="tb1">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <th>累计值</th>
+                                            <th>&gt;100%</th>
+                                            <th>80%-100%</th>
+                                            <th>70%-80%</th>
+                                            <th>&lt;70%</th>
+                                        </tr>
+                                        <tr class="row">
+                                            <td>速率超标</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td>速率未超标</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="item bottomC">
+                            <div class="tit">施工监测</div>
+                            <div class="tb2">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <th>累计值</th>
+                                            <th>&gt;100%</th>
+                                            <th>80%-100%</th>
+                                            <th>70%-80%</th>
+                                            <th>&lt;70%</th>
+                                        </tr>
+                                        <tr class="row">
+                                            <td>速率超标</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td>速率未超标</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="item bodC">
+                            <div class="tit">当前进度风险点信息</div>
+                            <div class="tb3">
+                                <ul class="wxInfo">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 超图 -->
             <div id="dtMap">
-                <div id="cesiumContainer">
+                <div id="cesiumContainer" oncontextmenu="event.preventDefault()">
                     <div id="slider"></div>
                 </div>
             </div>

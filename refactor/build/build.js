@@ -1,7 +1,9 @@
-require.config( {
-    waitSeconds: 30000,
+( {
+    // appDir: '../src',
+    baseUrl: '../src',
+    name: "main",
     paths: {
-        'echarts': '/../resource/assets/echarts.min',
+        'echarts': '../../../../../resource/assets/echarts.min',
         'Cesium': '../../webgl/Build/Cesium/Cesium',
         // 'Zlib': '../../webgl/Build/Cesium/Workers/zlib.min',
         'z': './assets/z',
@@ -35,15 +37,6 @@ require.config( {
         Zlib: {
             exports: 'Zlib'
         }
-    }
-} );
-
-require( [
-    './Event/onload',
-
-    './Event/ready',
-    './Event/initView',
-    './UI/bindDom'
-], function ( onload ) {
-    window.onload = onload
-} );
+    },
+    out: '../src/build.js'
+} )

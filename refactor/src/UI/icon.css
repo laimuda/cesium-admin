@@ -1,8 +1,15 @@
-#toolbar .btn-item.icon::before {
-  background-image: url(/resource/images/icon/ico_job-schedule.png);
+#toolbar {
+  /* 全屏按钮 */
+  /* 按钮图标 */
+  /* insar 等级 */
+  /* canvas 默认鼠标样式 */
+  /* 选择宽, 选中样式 */
 }
 #toolbar .full {
   background: url(/resource/images/icon/ico_full-screen.png) no-repeat center;
+}
+#toolbar .btn-item.icon::before {
+  background-image: url(/resource/images/icon/ico_job-schedule.png);
 }
 #toolbar .btn-item.icon.gcjd::before {
   background-image: url(/resource/images/icon/ico_job-schedule.png);
@@ -31,12 +38,43 @@
 #toolbar .btn-item.icon.gcjd .opts > ul > .item:nth-last-of-type(2) .sub .item:nth-child(3)::before {
   background-color: #00ffff;
 }
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(1)::after {
+  background: #f30504;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(2)::after {
+  background: #eb700f;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(3)::after {
+  background: #f8bb03;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(4)::after {
+  background: #fffd08;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(5)::after {
+  background: #a5fe71;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(6)::after {
+  background: #4eff02;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(7)::after {
+  background: #04faf4;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(8)::after {
+  background: #2dafff;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(9)::after {
+  background: #3c60f4;
+}
+#toolbar .opts.more.o-insar .sels .item:nth-of-type(10)::after {
+  background: #0406f5;
+}
 #toolbar canvas {
   cursor: url('/resource/images/cursor/ico_choose.png'), auto;
 }
 #toolbar .squaredTwo input[type=checkbox]:checked + label::after {
   background: url('/resource/images/icon/cheacks.png') no-repeat center;
 }
+/* 右键菜单 */
 .right-menu ul .item:nth-of-type(1)::before {
   background-image: url('/resource/images/cursor/guide_choose_normal.png');
 }
@@ -46,6 +84,7 @@
 .right-menu ul .item:nth-of-type(3)::before {
   background-image: url('/resource/images/cursor/guide_rotate_normal.png');
 }
+/* 鼠标样式 */
 #sandzMap canvas,
 .right-menu,
 #sandzMap .vctl {

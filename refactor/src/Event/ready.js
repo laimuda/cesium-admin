@@ -1,11 +1,10 @@
 define( [
-    'Cesium'
-], function( Cesium ) {
+    'z',
+], function( z ) {
     'use strict';
 
     $( function () {
         console.log( '>>> Ready' );
-
 
         var $fjx = $( '#fjx' );
         var $sandzMap = $( '#sandzMap' );
@@ -13,6 +12,9 @@ define( [
         var $mask = $sandzMap.find( '.mask' );
 
         setCanvasHeight();
+
+        // 判断是否 IE
+        z.support.chrome = /chrom(e|ium)/.test( navigator.userAgent.toLowerCase() );
 
         // canvas 自适应
         window.onresize = setCanvasHeight;
@@ -44,14 +46,18 @@ define( [
             } );
         } )();
 
+        var SCALC = 10000;
+
         function setCanvasHeight() {
             var $ce = $( '.cesium-widget canvas' );
             var $fjx = $( '#fjx' );
             var w = $sandzMap.width(), h = $sandzMap.height();
             var top = +$fjx.css( 'top' ).match( /\d*/ )[ 0 ], scalc = 1;
 
-            scalc = h / $ce.height();
+            // 减少误差
+            scalc = h * SCALC / ( $ce.height() );
             top *= scalc;
+            top = top / SCALC + 1;
 
             $ce.css( {
                 width: w, height: h

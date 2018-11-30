@@ -54,7 +54,7 @@ define( [
                 this._entities.push( entity );
             }
 
-            return this._entities.length;
+            return entity;
         },
 
         // 显示或者隐藏

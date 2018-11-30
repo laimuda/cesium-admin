@@ -73,8 +73,11 @@ define( [
 
         // insar 图层控制器
         insarCtl: {
+            count: 0, // 点击 insar 按钮次数
             handler: null,
-            _data: null,
+            _data: [],
+            isLoaded: false, // insar 点信息是否请求
+            api: null, // 获取 insar 数据的 promise 对象, 在获取数据时候赋值
 
             // 设置 insar 数据
             data: function ( data ) {
@@ -87,7 +90,9 @@ define( [
              * @param { Array } valMap 0-10 等级开关
              */
             setMapLevel: function ( valMap ) {
-                $.extend( insarLevel.map, valMap );
+                if ( typeof valMap === 'object' ) {
+                    $.extend( insarLevel.map, valMap );
+                }
                 this.turnOfLevel();
                 return this;
             },
@@ -98,7 +103,7 @@ define( [
              * insarLevel.map: 0-10
              */
             turnOfLevel: function () {
-                var layer = _fn.insar.layer, ret = [];
+                var layer = _fn.insar._layer, ret = [];
                 var that = this;
 
                 if ( !layer ) {
@@ -167,7 +172,25 @@ define( [
                 }
 
                 this.handler.setInputAction( function ( e ) {
-                    var _point = _fn.insar.layer.getSelection();
+                    if ( viewer._viewer.selectedEntity ) {
+                        return;
+                    }
+
+                    var layer = _fn.insar;
+
+                    if ( !layer || !layer._layer ) {
+                        return console.warn( '<<< Don\'t have insar layer' );
+                    }
+
+                    var id = layer._layer.getSelection()[ 0 ];
+
+                    if ( id == null ) {
+                        return;
+                    }
+
+                    var _point = $.grep( this._data, function ( item ) {
+                        return id === item.smID;
+                    } )[ 0 ];
 
                     if ( typeof fn === 'function' ) {
                         fn( e, _point );

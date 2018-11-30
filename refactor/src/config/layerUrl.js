@@ -4,15 +4,14 @@ define( [
     'use strict';
 
     return {
-        1: "/site/PVIP/riskanalysis/getMonitorObjectWarnStateByProject.ds",
-        2: "/site/PVIP/risklist/getRiskResourceDataNotMapFor3d.ds",
 
         ip_1: 'http://192.168.10.214:8090',
         // 图层使用的 ID
         ip_2: 'http://120.78.73.154:8090',
 
-        video: '/site/PVIP/cameraList/getCameraList.ds',
-        play: '/site/PVIP/cameraList/videoplayer.ds',
+        // 获取附近建筑物
+        getCurBuild:
+            '/iserver/services/map-JianZhuTouYing/rest/maps/FZ000TY@JZTY',
 
         // 图层
         provider_dt:

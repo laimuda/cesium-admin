@@ -10,7 +10,10 @@ define( [
     var post = function ( url, params ) {
         return $.post( url, params ).done( function ( data, success ) {
             if ( 'success' === success ) {
-                return ( data = JSON.parse( data ) );
+                try {
+                    data = JSON.parse( data );
+                } catch ( e ) { }
+                return data;
             }
         } ).fail( function ( error ) {
             console.error( '<<< ' + url + ' load fail' );
@@ -27,14 +30,21 @@ define( [
             return post( apiUrl.playVideo, {
                 cameraId: id
             } ).then( log( 'playVideo' ) );
+        },
+        getMoInsarpointByPcode: function ( id ) {
+            return post( apiUrl.getMoInsarpointByPcode, {
+                type: 2,
+                pcode: id
+            } ).then( log( 'getMoInsarpointByPcode' ) );
         }
     };
 
-    var apis = 'getCurRisk getAllRisk getPoint getLine getVideoMsg';
+    var apis = 'getCurRisk getAllRisk getPoint getLine getVideoMsg ' +
+        'getProgressData rateEx curProgressRiskMsg';
 
     $.each( apis.split( ' ' ), function ( index, item ) {
-        api[ item ] = function () {
-            return post( apiUrl[ item ] ).then( log( item ) );
+        api[ item ] = function ( params ) {
+            return post( apiUrl[ item ], params ).then( log( item ) );
         }
     } );
 
@@ -43,7 +53,9 @@ define( [
 
             if ( 'success' === success ) {
                 console.log( '>>> ' + msg + ' success' );
-                data = JSON.parse( data );
+                try {
+                    data = JSON.parse( data );
+                } catch ( e ) { }
             }
 
             return data;

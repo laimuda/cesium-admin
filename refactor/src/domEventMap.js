@@ -14,10 +14,17 @@ define( [
     'riskEntities',
     './Event/rotate',
     './Event/moveFly',
-    'videoCtl'
+    'videoCtl',
+    './config/insarLevel',
+    'lsCtl',
+    'pickupCtl',
+    'locCtl'
 ], function( cameraCtl, layerCtl, z, viewer, pointEntities, lineEntities, allRiskEntities,
-    nbRiskEntities, zbRiskEntities, riskEntities, rotate, moveFly, videoCtl ) {
+    nbRiskEntities, zbRiskEntities, riskEntities, rotate, moveFly, videoCtl, insarLevel,
+    lsCtl, pickupCtl, locCtl ) {
     'use strict';
+
+    var ACTIVE = 'active';
 
     // 退出卷帘模式
     function exitLinkAge () {
@@ -32,6 +39,19 @@ define( [
         if ( _callback ) {
             viewer.scene.camera.changed.removeEventListener( _callback );
         }
+
+        if ( !z.support.chrome ) {
+            $( '#content' ).hide();
+        }
+        $dt.show();
+    }
+
+    // 工具箱点击隐藏菜单
+    function toolClick () {
+        pickupCtl.close();
+        lsCtl.close();
+        locCtl.close();
+        $( '.map-tool' ).removeClass( ACTIVE );
     }
 
     // 退出地下模式显示其他按钮
@@ -42,10 +62,12 @@ define( [
             } );
         }
 
-        if ( layerCtl.insar ) {
+        if ( layerCtl.insar && layerCtl.insarCtl.isLoaded ) {
             layerCtl.insar.then( function () {
                 $( '.insar .mask' ).hide();
             } );
+        } else {
+            $( '.insar .mask' ).show();
         }
 
         if ( allRiskEntities._entities.length > 0 ) {
@@ -58,9 +80,32 @@ define( [
             $( '.video .mask' ).hide();
         }
 
-        $( '.change-view .mask' ).hide();
+        $( '.change-view .mask, .tool .mask' ).hide();
+        $( '#toolbar .o-insar' ).show();
+        $( '#toolbar .o-underground' ).hide();
+    }
 
-        // TODO: 工具箱
+    // 模式切换
+    function _changeModel () {
+        $( '.bubble' ).hide();
+    }
+
+    // 检测数据风险信息滚动动画
+    var count = 0, scrollTimer = null;
+    function autoScroll () {
+        ++count;
+
+        var top = -21 * count;
+        var $t = $( '.tb3' ).find( 'ul' );
+
+        $t.animate( {
+            marginTop: top
+        }, 500 );
+
+        if ( Math.abs(top) >= ( $t.height() - 105 ) ) {
+            $t.css( { marginTop: 0 } );
+            count = 0;
+        }
     }
 
     var events = {
@@ -83,17 +128,24 @@ define( [
         defModel: function ( key ) {
             layerCtl.udCtl.turn( false ); // 隐藏地下图层
             $( '.chaneg-view .mask' ).hide();
+            $( '.cesium-viewer-navigationContainer' ).show();
+            _changeModel();
             cameraCtl.changeModel( 'default' );
             exitLinkAge();
             showOth(); // 显示其他按钮
         },
         udModel: function ( key ) {
             $( '.chaneg-view .mask' ).show();
-            layerCtl.udCtl.turn( true ); // 显示地下图层
-            cameraCtl.changeModel( 'underground' );
-            exitLinkAge();
-            // 关闭其他的按钮
+            // 关闭其他的按钮, 关闭 insar 按钮
             $( '#toolbar .btn-item:not(.change-model) .mask' ).show();
+            $( '#toolbar .o-insar' ).hide();
+            $( '.cesium-viewer-navigationContainer' ).hide();
+            $( '#toolbar .o-underground' ).show();
+
+            _changeModel();
+            exitLinkAge();
+            cameraCtl.changeModel( 'underground' );
+            layerCtl.udCtl.turn( true ); // 显示地下图层
         },
         toCAD: function ( value, key ) {
             if ( cameraCtl._curModel !== 'default' ) {
@@ -108,6 +160,12 @@ define( [
         },
         linkage: function ( key ) {
             showOth(); // 显示其他按钮
+            $( '#content' ).show();
+            $( '.cesium-viewer-navigationContainer' ).hide();
+            if ( !z.support.chrome ) {
+                $( '#dtMap' ).hide();
+            }
+            _changeModel();
             cameraCtl.linkage();
         },
 
@@ -117,6 +175,16 @@ define( [
         },
         turnLine: function ( value, key ) {
             lineEntities.turn( !lineEntities.dm._show );
+        },
+        showGcjd: function () {
+            window.setTimeout( function () {
+                $( '.show-data:not(#gcjd)' ).removeClass( ACTIVE );
+                $( '#gcjd, #mask' ).addClass( ACTIVE );
+            }, 1 );
+        },
+        hideGcjd: function () {
+            $( '#gcjd, #mask' ).removeClass( ACTIVE );
+            $( '#mask' ).click();
         },
 
         /* 监测点 */
@@ -153,7 +221,18 @@ define( [
                     break;
             }
         },
-
+        showJcsj: function () {
+            window.setTimeout( function () {
+                $( '.show-data:not(#jcsj)' ).removeClass( ACTIVE );
+                $( '#jcsj, #mask' ).addClass( ACTIVE );
+                scrollTimer = window.setInterval( autoScroll, 3000 );
+            }, 1 );
+        },
+        hideJcsj: function () {
+            window.clearInterval( scrollTimer );
+            $( '#jcsj, #mask' ).removeClass( ACTIVE );
+            $( '#mask' ).click();
+        },
 
         /* 建筑 显示隐藏 */
         isShowOfBuild: function ( val ) {
@@ -162,6 +241,40 @@ define( [
         },
 
         /* insar 点 */
+        isInsarClick: function ( val ) {
+            if ( val ) {
+                return;
+            }
+
+            // 判断模式
+            if ( cameraCtl._curModel === 'underground' ) {
+                $( '.o-underground' ).addClass( ACTIVE );
+            } else {
+                var count = ++layerCtl.insarCtl.count;
+                if ( count === 1 )   {
+                    layerCtl.insar._layer._visible = true;
+                }
+                $( '.o-insar' ).addClass( ACTIVE );
+            }
+        },
+        chooseInsarGrade: function ( val, key ) {
+            insarLevel.map[ key ] = !val;
+            layerCtl.insarCtl.setMapLevel();
+        },
+        isShowUdLayers: function ( val, key ) {
+            var $self = $( this ), layers = layerCtl.udCtl._layers;
+
+            if ( layers[ key ]._name === $self.text() ) {
+                layers[ key ]._visible = !val;
+                return;
+            }
+
+            $.each( layers, function ( _, layer ) {
+                if ( layer._name === $self.text() ) {
+                    layer._visible = !val;
+                }
+            } );
+        },
 
         /* 视频监控 */
         isShowVideo: function ( val ) {
@@ -169,6 +282,63 @@ define( [
         },
 
         /* 工具箱 */
+        // 量算
+        lsClick: function () {
+            toolClick();
+            $( '#measure' ).addClass( ACTIVE );
+        },
+        lsClose: function () {
+            lsCtl.close();
+            $( '#measure' ).removeClass( ACTIVE );
+        },
+        lsDis: function () {
+            lsCtl.distance();
+        },
+        lsArea: function () {
+            lsCtl.area();
+        },
+        lsHeight: function () {
+            lsCtl.height();
+        },
+        lsClear: function () {
+            lsCtl.clear();
+        },
+        // 坐标拾取
+        pickup: function () {
+            toolClick();
+            pickupCtl.start();
+            $( '#zbsq' ).addClass( ACTIVE );
+        },
+        pickupClose: function () {
+            pickupCtl.close();
+            $( '#zbsq' ).removeClass( ACTIVE );
+        },
+        pickupCoyp: function () {
+            var $self = $( this );
+            var w = $self.siblings( '.w' ).html();
+            var j = $self.siblings( '.j' ).html();
+            var h = $self.siblings( '.h' ).html();
+            var clipBoardContent = [ w, j, h ].join( ',' );
+            z.copyToClipboard( clipBoardContent );
+        },
+        // 坐标定位
+        location: function () {
+            toolClick();
+            locCtl.start();
+            $( '#zbdw' ).addClass( ACTIVE );
+        },
+        locationSub: function () {
+            var txt = $( '#zbdw input' ).val();
+            locCtl.submit( txt );
+        },
+        locationCan: function () {
+            locCtl.clear();
+            $( '#zbdw input' ).val( '' );
+        },
+        locationClose: function () {
+            locCtl.close();
+            $( '#zbdw' ).removeClass( ACTIVE );
+        },
 
         /* 全屏 */
         fullSize: function ( val ) {

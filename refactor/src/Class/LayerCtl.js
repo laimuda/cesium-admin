@@ -11,21 +11,23 @@ define( [
         $.extend( this, {
             detail: opts.detail,
             _layers: [], // 图层集合
-            _pre: true // 缓存状态
+            _pre: [] // 缓存状态
         } );
     }
 
     $.extend( LayerCtl.prototype, {
         // 返回上一状态
         pre: function () {
-            this.turn( this._pre );
-
+            var that = this;
+            $.each( this._pre, function ( index, item ) {
+                that._layers[ index ]._visible = item;
+            } );
         },
         // 隐藏显示
         turn: function ( flag ) {
-            var layers = this._layers, len = this._layers.length;
-            this._pre = len > 0 && layers[ 0 ]._visible && layers[ len - 1 ]._visible;
-            $.each( this._layers, function ( _, item ) {
+            var layers = this._layers, that = this;
+            $.each( layers, function ( index, item ) {
+                that._pre[ index ] = item._visible;
                 item._visible = flag;
             } );
         }

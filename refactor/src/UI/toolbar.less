@@ -1,6 +1,5 @@
 @import url( '../../static/style/params.less' );
 @import url( '../../static/style/mixins.less' );
-@import url( './icon.less' );
 
 #toolbar {
     width: 100%;
@@ -38,6 +37,7 @@
         }
 
         .btn {
+            // outline: none;
             text-align: left;
             text-indent: 6px;
             padding-left: 0;
@@ -133,15 +133,20 @@
         cursor: default;
     }
 
-    /* select */
-    .opts.select {
+    .opts {
         position: absolute;
         top: 35px;
         left: 0;
-        z-index: 7;
+        z-index: 8;
+        cursor: default;
+        background-color: #fff;
+        color: #989898;
+    }
+
+    /* select */
+    .opts.select {
         width: 100%;
         display: none;
-        cursor: default;
     }
     .opts.select ul, .sub {
         border: 1px solid #ccc;
@@ -182,7 +187,7 @@
         transform: translateX( @btn-w - 1px );
         width: 100%;
         height: max-content;
-        z-index: 7;
+        z-index: 8;
     }
     .sub.znv-disable {
         background-color: #dddddd!important;
@@ -211,8 +216,59 @@
         width: 15px;
         height: 5px;
     }
+
+    /* insar 菜单 */
+    .btn-item.active .opts.more.active {
+        transform: scale(1);
+    }
+    .opts.more {
+        .setWH( 224px, 300px );
+        left: -15px;
+        padding: 10px;
+        overflow-y: scroll;
+        transform: scale(0);
+        transition: transform .3s;
+        transform-origin: 0% 0%;
+
+        .tit {
+            padding-bottom: 4px;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 4px;
+        }
+
+        .tit-item {
+            width: 33.3%;
+            float: left;
+            text-align: center;
+            height: 32px;
+            line-height: 32px;
+        }
+
+        .sels {
+            .item {
+                width: 100%;
+                height: 30px;
+                text-indent: 9px;
+                line-height: 30px;
+                .setRelative();
+            }
+
+            .item::after {
+                height: 10px;
+                width: 10px;
+                // background-color: black;
+                content: "";
+                position: absolute;
+                top: 50%;
+                right: 40px;
+                transform: translateY(-50%) translateX(-10px);
+                border-radius: 2px;
+            }
+        }
+    }
 }
 
+/* 遮罩层 */
 #mask {
     position: absolute;
     left: 0;
@@ -263,5 +319,125 @@
         background-size: 100% 100%;
         background-repeat: no-repeat;
         z-index: -1;
+    }
+}
+
+.map-tool {
+    height: 50px;
+    padding-left: 16px;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    z-index: 7;
+    transition: transform .5s;
+    background-color: #fff;
+    transform: scale(0);
+    transform-origin: 100% 0%;
+
+    .btn-item {
+        background-color: #E0E0E0;
+        margin-right: 16px;
+        border: 1px solid #E0E0E0;
+        color: #666666;
+        border-radius: 2px;
+        line-height: 28px;
+        height: 30px;
+        width: 60px;
+        cursor: pointer;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .close {
+        float: right;
+        width: 12px;
+        height: 12px;
+        background-image: url(/resource/images/icon/close.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        transform: translateY( 19px );
+        margin-right: 16px;
+        opacity: 1;
+        padding: 0;
+        cursor: pointer;
+        background-color: transparent;
+        border: 0;
+        -webkit-appearance: none;
+        outline: none;
+    }
+}
+.map-tool.active {
+    transform: scale(1);
+}
+
+/* 量算 */
+#measure {
+
+    select {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        height: 30px;
+        line-height: 30px;
+        margin-top: 10px;
+        margin-right: 16px;
+        padding: 4px 6px;
+        margin-bottom: 10px;
+        display: inline-block;
+        color: #555;
+        vertical-align: middle;
+        border-radius: 4px;
+        letter-spacing: normal;
+        word-spacing: normal;
+        text-transform: none;
+        text-indent: 0px;
+        text-shadow: none;
+        text-rendering: auto;
+        text-align: start;
+    }
+}
+
+/* 坐标拾取 */
+#zbsq {
+    font-size: 16px;
+    color: #333;
+    line-height: 50px;
+
+    .copy {
+        margin-left: 16px;
+        // text-decoration: #333;
+        // margin-right: 16px;
+        // text-decoration-line: underline;
+        color: #333;
+    }
+}
+.label-tip {
+    opacity: .8;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    font-size: 12px;
+    color: #333;
+    padding: 3px;
+    display: none;
+    z-index: 9;
+    cursor: pointer;
+    border: 1px solid #333;
+}
+
+/* 坐标定位 */
+#zbdw {
+    input {
+        margin: 0;
+        padding: 0;
+        border: none;
+        height: 100%;
+        width: 350px;
+        outline: none;
+        box-shadow: none;
+        border-radius: 0;
+        font-size: 16px;
+        padding-left: 3px;
+        margin-right: 16px;
     }
 }

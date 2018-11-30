@@ -8,11 +8,15 @@ define( [
     './var/layers',
     'layerCtl',
     './var/entities/index',
-    './config/underground'
-], function ( viewer, ZnvUrls, viewPosition, layers, layerCtl, allEntitiesCtl, udConfig ) {
+    './config/underground',
+    'z'
+], function ( viewer, ZnvUrls, viewPosition, layers, layerCtl, allEntitiesCtl, udConfig,
+    z ) {
     'use strict';
 
     var MAXHEIGHT = 1300, DEF = 'default', UD = 'underground', LINK = 'linkage';
+
+    var isLoadForIE = false, isLoadForChrome = false;
 
     var cameraCtl = {
         _curModel: DEF,
@@ -72,6 +76,9 @@ define( [
                 this.turn( false ); // 隐藏其他
                 this.setView( 'underground' );
                 this.setUdConfig( true );
+                if ( layerCtl.udCtl._layers.length > 0 ) {
+                    $( '.insar .mask' ).hide();
+                }
                 return;
             }
             this.underground._isLoad = true;
@@ -93,6 +100,12 @@ define( [
                 this.turn( false ); // 隐藏其他
                 this.setView( 'underground' );
 
+                // 显示 insar 按钮
+                if ( cameraCtl._curModel === 'underground'
+                    /* && layerCtl.udCtl._layers.length > 0 */ ) {
+                    $( '.insar .mask' ).hide();
+                }
+
                 // 配置
                 this.setUdConfig( true );
             }
@@ -110,18 +123,44 @@ define( [
 
             this._curModel = LINK;
 
-            if ( window._Unity.loaded ) { // 如果已经加载了 Unity
-                $dt.height( h / 2 );
-                $( '#fjx' ).css( {
-                    top: h / 2 - 3
-                } );
+            if ( isLoadForIE ) {
                 return;
             }
 
-            $( '#toolbar' ).find( '.btn-item .mask' ).show();
+            if ( window._Unity.loaded ) { // 如果已经加载了 Unity
+                // 绑定视角变化事件
+                var _callback = window._Unity.callback;
+                if ( _callback ) {
+                    viewer.scene.camera.changed.addEventListener( _callback );
+                }
+
+                $dt.height( h / 2 );
+                $( '#fjx' ).css( {
+                    top: h / 2 - 3
+                } ).show();
+                return;
+            }
+
+            $( '#toolbar' ).find( '.btn-item:not(.change-model) .mask' ).show();
             $( '#loadingbar' ).show();
-            $( '#content' ).attr( 'src', '/site/PVIP/WebContent/ForChorme/cesium.html' );
+
             $dt.height( 0 );
+
+            if ( isLoadForChrome ) {
+                return;
+            }
+
+            var $iframe = $( '#content' );
+
+            window.setTimeout( function () {
+                if ( z.support.chrome ) {
+                    $iframe.attr( 'src', '/site/PVIP/WebContent/ForChorme/cesium.html' );
+                    isLoadForChrome = true;
+                } else {
+                    $iframe.attr( 'src', '/site/PVIP/WebContent/ForIE/cesium.html' );
+                    isLoadForIE = true;
+                }
+            }, 1 );
         },
 
         // 控制 entities 和地下模式图层的显示隐藏

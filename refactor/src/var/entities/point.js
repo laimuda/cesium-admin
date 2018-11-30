@@ -7,6 +7,7 @@ define( [
     'use strict';
 
     return new EntityCtl( {
-        detail: '桩号'
+        detail: '桩号',
+        show: true
     } );
 } );

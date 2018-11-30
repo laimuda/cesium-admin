@@ -17,103 +17,86 @@ define( [
     './Event/rotate',
     './Event/moveFly',
     './Event/rightMenu',
-    'videoCtl'
+    'videoCtl',
+    'lsCtl',
+    './var/layers',
+    'pickupCtl',
+    'locCtl',
+    'Bubble',
+    'ZnvUrls',
+    'echarts'
 ], function ( Cesium, viewer, api, layerCtl, cameraCtl, lineEntities, pointEntities, zbRiskEntities,
         nbRiskEntities, allRiskEntities, riskEntities, insarLevel, rotate, moveFly, rightMenu,
-        videoCtl ) {
+        videoCtl, lsCtl, layers, pickupCtl, locCtl, Bubble, ZnvUrls, echarts ) {
     'use strict';
 
     const UPSTEP = 1000000000, ACTIVE = 'active';
 
     var origin = window.location.origin;
 
-    return function ( _viewer ) {
-        var flag = true;
+    function _fn( _viewer ) {
 
-        // 测试
-        $( '#btn' ).click( function () {
-            // zbRiskEntities.turn( !zbRiskEntities._show );
-            // nbRiskEntities.turn( !nbRiskEntities._show );
-
-            // flag = !flag;
-            // var ret = $.map( insarLevel.map, function ( item ) {
-            //     return item = flag;
-            // } );
-            // layerCtl.insarCtl.setMapLevel( ret );
-
-            // 切到地下模式
-            // cameraCtl.changeModel( 'underground' );
-
-            // 开始旋转
-            // rotate.start();
-
-            // 开始滑行
-            // moveFly.start();
-
-            _viewer.trackedEntity = null;
+        // 暴露给 Unity
+        $.extend( window._Unity, {
+            allRiskEntities: allRiskEntities,
+            pointEntities: pointEntities,
+            layerCtl: layerCtl,
+            videoCtl: videoCtl
         } );
-
-        $( '#btn1' ).click( function () {
-            // 结束滑行
-            moveFly.close();
-
-            // 结束旋转
-            // rotate.close();
-
-            // 切换到标准模式
-            // cameraCtl.changeModel( 'default' );
-
-            // flag = !flag;
-            // var ret = $.map( insarLevel.map, function ( item ) {
-            //     return true;
-            // } );
-            // ret[ 5 ] = flag
-            // layerCtl.insarCtl.setMapLevel( ret );
-
-            // allRiskEntities.turn( !allRiskEntities._show );
-        } );
-
-        $( '.change-view, .change-model' )
-            .find( '.mask' ).hide();
-        $( '#loadingbar' ).hide();
 
         rotate( _viewer ); // 注册旋转
         moveFly( _viewer ); // 注册滑行
         rightMenu( _viewer ); // 鼠标右键弹出菜单
 
-        // 右键点击事件
-
-        // 加载建筑图层
-        layerCtl( 'build' ).then( function ( build ) {
-            build.brightness = 1.8;
-            build.contrast = 1.1;
-            build.saturation = 1.2;
-            build.gamma = 1.3;
-
-            $( '.build .mask' ).hide();
+        // 点击使 show-data 消失
+        canvasClick( _viewer, function ( e ) {
+            $( '.show-data' ).removeClass( ACTIVE );
         } );
 
-        // // 加载 insar 图层
-        // layerCtl( 'insar' );
-        // // 获取 insar 数据, 比较慢
-        // api.getInsarData().then( function ( data ) {
-        //     if ( !layerCtl.insar ) { // 判断是否加载了 insar 图层
-        //         return;
-        //     }
+        // 创建地下模式菜单
+        createOUnderground( _viewer );
 
-        //     data = data.list;
+        // 注册提示栏
+        runBubble( _viewer );
 
-        //     layerCtl.insar.then( function ( layer ) {
-        //         $.each( insarLevel.map, function ( index ) {
-        //             insarLevel.map[ index ] = true;
-        //         } );
-        //         layerCtl.insarCtl.data( data ).click( function ( e, _point ) {
-        //             console.log( '_point:', _point );
-        //         } );
-        //     } );
-        // } );
+        // 加载建筑图层
+        runBuild( _viewer );
+
+        // insar
+        runInsar( _viewer );
+        showTipForInsar( _viewer );
 
         // 全部风险点
+        runRisk( _viewer );
+
+        // 进度线 桩号
+        runProgress( _viewer );
+        showTipForPoint( _viewer );
+        getGcjdData( _viewer );
+
+        // 视频监控
+        runVideo( _viewer );
+
+        // 注册量算的 change 事件
+        runLs( _viewer );
+
+        // 坐标拾取
+        runPickup( _viewer );
+
+        // 坐标定位
+        runLoc( _viewer );
+
+        // 点击风险点获取附近建筑物
+        runGetCurBuild( _viewer );
+        showTipForRisk( _viewer );
+        getJcsjData( _viewer );
+
+        $( '.change-view, .change-model, .tool' )
+            .find( '.mask' ).hide(); // 遮罩层
+        $( '#loadingbar' ).hide();
+    };
+
+    function runRisk ( _viewer ) {
         $.when( api.getAllRisk(), api.getCurRisk() ).then( function ( allRisk, curRisk ) {
             // console.log( 'curRiskData:', curRisk );
             // console.log( 'allRiskData:', allRisk );
@@ -166,13 +149,8 @@ define( [
             allRiskEntities.turn( false );
             allRiskEntities.show();
 
-            // 点击事件
-            allRiskEntities.click( function ( e, _entity ) {
-                console.log( '_entity:', _entity );
-            } );
-
             // 显示检测点
-            $( '.jcd .mask' ).hide();
+            hideMask( '.jcd' );
 
             // 添加 Entity
             function pushEntities ( obj, key ) {
@@ -263,8 +241,9 @@ define( [
                 return obj.riskSourceId + ( obj.riskEventId ? obj.riskEventId : '' );
             }
         } );
+    }
 
-        // 进度线 桩号
+    function runProgress ( _viewer ) {
         $.when( api.getLine(), api.getPoint() ).then( function ( line, point ) {
             line = line.list;
             line.sort( function ( a, b ) {
@@ -284,11 +263,11 @@ define( [
                 pointEntities.add( {
                     name: '工程进度点-' + index,
                     vMsg: item,
-                    point: new Cesium.PointGraphics({
-                        color: new Cesium.Color(1, 1, 0),
+                    point: new Cesium.PointGraphics( {
+                        color: new Cesium.Color( 1, 1, 0 ),
                         pixelSize: 7,
-                        outlineColor: new Cesium.Color(0, 1, 1)
-                    }),
+                        outlineColor: new Cesium.Color( 0, 1, 1 )
+                    } ),
                     position: Cesium.Cartesian3.fromDegrees( +item.smX, +item.smY , 3.0 )
                 } );
 
@@ -317,7 +296,7 @@ define( [
             drawLine( lineEntities.dm, Cesium.Color.CORNFLOWERBLUE );
 
             // 打开遮罩层
-            $( '.gcjd .mask' ).hide();
+            hideMask( '.gcjd' );
 
             // 绘制进度线
             function drawLine ( target, color ) {
@@ -333,8 +312,9 @@ define( [
                 } );
             }
         } );
+    }
 
-        // 视频监控
+    function runVideo ( _viewer ) {
         videoCtl.post().then( function ( data ) {
             // console.log( 'data:::', data );
 
@@ -400,7 +380,7 @@ define( [
             // 注册点击事件, 显示二级选项
             var oldEn, i;
             videoCtl.click( function ( e, _entity ) {
-                console.log( 'xxxxx:', _entity );
+                console.log( 'entity:', _entity );
                 var wgs = new Cesium.Cartesian3.fromDegrees(
                     _entity._vclong,
                     _entity._vclaitu,
@@ -448,7 +428,12 @@ define( [
                 oldEn = _entity;
             } );
 
-            $( '.video .mask' ).hide();
+            // 数据库有可能返回了一个空数组
+            if ( videoCtl._entities.length > 0 ) {
+                hideMask( '.video' );
+            } else {
+                console.warn( '<<< 视频监控接口返回空数据, data:', data );
+            }
 
             // 设置样式
             function _setXY ( x, y, hx, hy ) {
@@ -458,5 +443,404 @@ define( [
                 } );
             }
         } );
-    };
+    }
+
+    function runInsar ( _viewer ) {
+        // 加载 insar 图层
+        layerCtl( 'insar' ).then( function () {
+            layerCtl.insar._layer._visible = false;
+        } );
+        // 获取 insar 数据, 比较慢
+        layerCtl.insarCtl.api = api.getInsarData().then( function ( data ) {
+            if ( !layerCtl.insar ) { // 判断是否加载了 insar 图层
+                return;
+            }
+
+            data = data.list;
+            layerCtl.insarCtl.isLoaded = true;
+
+            hideMask( '.insar' );
+
+            layerCtl.insar.then( function ( layer ) {
+                $.each( insarLevel.map, function ( index ) {
+                    insarLevel.map[ index ] = true;
+                } );
+                layerCtl.insarCtl.data( data ).click( function ( e, _point ) {
+                    console.log( '_point:', _point );
+
+                    // 显示提示栏
+                    // showTipForInsar();
+                } );
+            } );
+        } );
+    }
+
+    function runBuild ( _viewer ) {
+        layerCtl( 'build' ).then( function ( build ) {
+            build.brightness = 1.8;
+            build.contrast = 1.1;
+            build.saturation = 1.2;
+            build.gamma = 1.3;
+
+            hideMask( '.build' );
+        } );
+    }
+
+    function runLs ( _viewer ) {
+        lsCtl( _viewer );
+        $( function () {
+            $( '#selOpt1 ' ).change( function () {
+                lsCtl.change( +$( this ).val() );
+            } );
+        } );
+    }
+
+    function runPickup ( _viewer ) {
+        pickupCtl( _viewer, '.label-tip' ); // 注册坐标拾取
+        pickupCtl.callback.add( function ( fd ) {
+            var $t = $( '#zbsq' );
+            $t.find( '.w' ).text( fd.lng.toFixed( 10 ) );
+            $t.find( '.j' ).text( fd.lat.toFixed( 10 ) );
+            $t.find( '.h' ).text( fd.h.toFixed( 10 ) );
+        } );
+        $( '.label-tip' ).mousemove( function ( e ) {
+            var msg = this.getBoundingClientRect();
+            $( this ).css( {
+                top: function () {
+                    return msg.left + e.offsetX;
+                },
+                left: function () {
+                    return msg.top + e.offsetY;
+                }
+            } );
+        } );
+    }
+
+    function runLoc ( _viewer ) {
+        // 回车确定
+        $( '#zbdw input' ).keypress( function ( $e ) {
+            if ( $e.keyCode === 13 ) {
+                $( this ).siblings( '.submit' ).click();
+            }
+        } )
+        // 右键粘贴
+        // .on( 'contextmenu', function ( $e ) {
+        //     $( this ).val( pickupCtl.txt );
+        // } );
+    }
+
+    function runGetCurBuild ( _viewer ) {
+        allRiskEntities.click( function ( e, _entity ) {
+            var centerPoint = new SuperMap.Geometry.Point(
+                _entity.vPosition.x,
+                _entity.vPosition.y
+            );
+            queryByDistance( centerPoint, 0.0002 );
+        } );
+
+        // 获取附近建筑 ID
+        function processCompleted( queryEventArgs ) {
+            console.log( 'queryEventArgs:', queryEventArgs.result );
+
+            var i, j, result = queryEventArgs.result, SmID;
+
+            for(i = 0;i < result.recordsets.length; i++) {
+                for(j = 0; j < result.recordsets[ i ].features.length; j++) {
+                    // 暂时使用 SmUserID
+                    SmID = result.recordsets[ i ].features[ j ].data.SmUserID;
+                }
+            }
+
+            if ( SmID ) {
+                layerCtl.build.then( function ( build ) {
+                    build.setSelection( SmID );
+                } );
+            }
+        }
+
+        function processFailed( e ){
+            console.error( e.error.errorMsg );
+        }
+
+        function queryByDistance( centerPoint, queryDis ) {
+            var queryByDistanceParams = new SuperMap.REST.QueryByDistanceParameters({
+                queryParams: new Array( new SuperMap.REST.FilterParameter( {
+                    name: "FZ000TY@JZTY"
+                } ) ),
+                returnContent: true,
+                distance: queryDis,
+                geometry: centerPoint,
+                isNearest: true,
+                expectCount: 1
+            });
+
+            var queryByDistanceService = new SuperMap.REST.QueryByDistanceService(
+                ZnvUrls.ip_2 + ZnvUrls.getCurBuild
+            );
+
+            queryByDistanceService.events.on( {
+                "processCompleted": processCompleted,
+                "processFailed": processFailed
+            } );
+
+            queryByDistanceService.processAsync( queryByDistanceParams );
+        }
+    }
+
+    function runBubble ( _viewer ) {
+        // 创建提示栏
+        viewer.bubble = new Bubble( _viewer.scene, 'bubble' );
+        // 点击消失
+        var handler = new Cesium.ScreenSpaceEventHandler( _viewer.scene.canvas );
+        handler.setInputAction( function ( e ) {
+            viewer.bubble.visibility( false );
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK );
+    }
+
+    function hideMask ( id ) {
+        if ( cameraCtl._curModel !== 'linkage' ) {
+            $( id ).find( '.mask' ).hide();
+        }
+    }
+
+    function createOUnderground () {
+        $( function () {
+            var $ul = $( '.o-underground .sels' );
+            $.each( layers, function ( index, layer ) {
+                $ul.append( '<li class="item" data-key="' + index + '" data-item="isShowUdLayers">' +
+                    '<span class="squaredTwo">' +
+                        '<input type="checkbox" checked>' +
+                        '<label class="check-icon"></label>' +
+                    '</span>' +
+                    layer +
+                '</li>' );
+            } );
+        } );
+    }
+
+    function showTipForRisk ( _viewer ) {
+        allRiskEntities.click( function ( e, _entity ) {
+
+            var arrStr = _entity._vname.split( ',' );
+            var data = _entity._vdata;
+            var html =
+                '<p>风险概况:' + data.riskDesc + '</p>' +
+                '<p>结构类型:' + data.structType + '</p>' +
+                '<p>基础类型:' + data.basicType + '</p>' +
+                '<p>竣工时间:' + data.finishTime + '</p>';
+
+            exitEcharts();
+            $( '#title' ).text( arrStr[ 0 ] + ' ' + ( arrStr[ 1 ] || '' ) );
+            $( '#des' ).html( html );
+
+            var bubbleposition = new Cesium.Cartesian3.fromDegrees(
+                _entity.vPosition.x,
+                _entity.vPosition.y,
+                _entity.vPosition.z
+            );
+
+            viewer.bubble.showAt( bubbleposition );
+        } );
+    }
+
+    function showTipForPoint ( _viewer ) {
+        pointEntities.click( function ( e, _entity ) {
+
+            var strInfoX = ( +_entity._vMsg.smX ).toFixed( 6 );
+            var strInfoY = ( +_entity._vMsg.smY ).toFixed( 6 );
+
+            exitEcharts();
+            $( '#title' ).text( '桩号: ' + _entity._vMsg.No );
+            $( '#des' ).html(
+                '<p>x: ' + strInfoX + '</p>' +
+                '<p>y: ' + strInfoY + '</p>'
+            );
+
+            var bubbleposition = new Cesium.Cartesian3.fromDegrees(
+                +_entity._vMsg.smX,
+                +_entity._vMsg.smY,
+                10 );
+            viewer.bubble.showAt( bubbleposition );
+        } );
+    }
+
+    function showTipForInsar ( _viewer ) {
+        var _api = layerCtl.insarCtl.api;
+
+        if ( !api ) {
+            return;
+        }
+
+        _api.then( function () {
+            layerCtl.insarCtl.click( function ( e, _point ) {
+                var pccode = _point.pcode;
+
+                $( '.bubble' ).addClass( ACTIVE );
+                $( '#title' ).text( 'PCODE: ' + pccode + '沉降数据图' );
+                $( '#des' ).html(
+                    '<div id="chart" style="width: 260px; height: 200px; z-index:7"></div>'
+                );
+
+                api.getMoInsarpointByPcode( pccode ).then( drawEcharts );
+            } );
+        } );
+
+        function drawEcharts ( data ) {
+            var myChart = echarts.init( $( '#chart' )[ 0 ] );
+
+            var date = data.date;
+            var list = date.dateList;
+            var code = [], arr = [], _item;
+
+            $.each( list, function ( _, item ) {
+                _item = item.split( ':' );
+                code.push( _item[ 0 ] );
+                arr.push( +_item[ 1 ] );
+            } );
+
+            var option = {
+                grid: {
+                    top: 10,
+                    bottom: 40,
+                    left: 35,
+                    right: 10
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: code
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '{value}'
+                    },
+                    axisPointer: {
+                        snap: true
+                    }
+                },
+                visualMap: {
+                    show: false,
+                    dimension: 0,
+                    pieces: [{
+                        lte: 6,
+                        color: 'green'
+                    }, {
+                        gt: 6,
+                        lte: 8,
+                        color: 'red'
+                    }, {
+                        gt: 8,
+                        lte: 14,
+                        color: 'green'
+                    }, {
+                        gt: 14,
+                        lte: 17,
+                        color: 'red'
+                    }, {
+                        gt: 17,
+                        color: 'green'
+                    }]
+                },
+                series: [
+                    {
+                        name: '沉降值',
+                        type: 'line',
+                        smooth: true,
+                        data: arr,
+
+                    }
+                ]
+            };
+
+            myChart.setOption( option );
+
+            var bubbleposition = new Cesium.Cartesian3.fromDegrees(
+                date.smX, date.smY, date.height
+            );
+            viewer.bubble.showAt( bubbleposition );
+        }
+    }
+
+    function exitEcharts () {
+        $( '.bubble' ).removeClass( ACTIVE );
+    }
+
+    function getGcjdData ( _viewer ) {
+        api.getProgressData().then( function ( data ) {
+            data = data.data[ 0 ];
+
+            // 修改 html
+            var $nums = $( '#gcjd .num' );
+            var keys = [ 'totlePer', 'westPer', 'eastPer', 'middlePer' ];
+
+            $.each( keys, function ( index, k ) {
+                $nums.eq( index ).html( data[ k ] )
+                    .parent().siblings( '.pro' ).find( 'div' )
+                    .css( 'transform', 'translateX(-' + ( 100 - data[ k ] ) + '%)' );
+            } );
+        } );
+    }
+
+    function getJcsjData ( _viewer ) {
+        api.rateEx( {
+            type: 1
+        } ).then( function ( data ) {
+            // 修改第二个表格
+            _setTable( '#jcsj .tb2 .row', data );
+        } );
+
+        api.rateEx( {
+            type: 2
+        } ).then( function ( data ) {
+            // 修改第一个表格
+            _setTable( '#jcsj .tb1 .row', data );
+        } );
+
+        api.curProgressRiskMsg().then( function ( data ) {
+
+            var html = '';
+
+            $.each( data, function ( _, item ) {
+                html +=
+                    '<li class="info">' +
+                        item.riskSource + '&nbsp&nbsp' + item.riskEvent +
+                    '</li>';
+            } );
+
+            $( '#jcsj .tb3 ul' ).html( html );
+        } );
+
+        function _setTable ( id, data ) {
+            var $trs = $( id );
+            var trs = [ $trs.eq( 0 ).find( 'td' ), $trs.eq( 1 ).find( 'td' ) ];
+            var kMap = [ 'levelOneCount', 'levelTwoCount', 'levelThreeCount', 'levelFourCount' ];
+
+            // 修改第二个表格
+            $.each( data.warnWorkStat, function ( index, item ) {
+                $.each( kMap, function ( i, k ) {
+                    trs[ index ].eq( i + 1 ).text( item[ k ] );
+                } );
+            } );
+        }
+    }
+
+    function canvasClick ( _viewer, fn ) {
+        if ( typeof fn !== 'function' ) {
+            return;
+        }
+        // 点击消失
+        var handler = new Cesium.ScreenSpaceEventHandler( _viewer.scene.canvas );
+        handler.setInputAction( function ( e ) {
+            fn( e );
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK );
+    }
+
+    return _fn;
 } );

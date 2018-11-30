@@ -13,10 +13,15 @@ define( [
     function EntityCtl ( opts ) {
         this._opts = opts;
         this._entities = [];
-        this._show = true;
-        this._pre = true;
+        this._show = false;
+        this._pre = false;
         this.detail = opts.detail;
         this.handler = undefined;
+
+        if ( opts.show ) {
+            this._show = true;
+            this._pre = true;
+        }
     }
 
     $.extend( EntityCtl.prototype, {
@@ -34,7 +39,6 @@ define( [
             $.each( this._entities, function ( index, entity ) {
                 viewer.entities.remove( entity );
             } );
-            this._show = true;
             return this;
         },
 
@@ -43,12 +47,12 @@ define( [
             $.each( this._entities, function ( index, entity ) {
                 viewer.entities.add( entity );
             } );
-            this._show = true;
             return this;
         },
 
         // 显示或者隐藏
         turn: function ( flag ) {
+            this._pre = this._show;
             $.each( this._entities, function ( index, entity ) {
                 entity.show = flag;
             } );
@@ -66,7 +70,8 @@ define( [
             if ( this._show !== entity._show ) {
                 viewer.entities[ keyMap[ +this._show ] ]( entity );
             }
-            return this._entities.push( entity );
+            this._entities.push( entity );
+            return entity;
         },
 
         // 删除点

@@ -9,17 +9,18 @@ define( [
     'use strict';
 
     return {
-        _oldShow: undefined, // 缓存旧的状态
         turn: function ( flag ) {
-            allRiskEntities._pre = allRiskEntities._show;
-            lineEntities._pre = lineEntities.dm._show;
-            pointEntities._pre = pointEntities._show;
+            // allRiskEntities._pre = allRiskEntities._show;
+            // lineEntities._pre = lineEntities.dm._show;
+            // pointEntities._pre = pointEntities._show;
             allRiskEntities.turn( flag );
             lineEntities.turn( flag );
             pointEntities.turn( flag );
         },
         pre: function () {
-            this.turn( allRiskEntities._pre && lineEntities._pre );
+            allRiskEntities.pre();
+            lineEntities.pre();
+            pointEntities.pre();
         }
     };
 } );

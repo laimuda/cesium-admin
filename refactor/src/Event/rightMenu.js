@@ -12,6 +12,7 @@ define( [
         var $menu = $( '.right-menu' );
         var ACTIVE = 'active';
 
+        // 控制是否显示隐藏 ****
         rightClick.isShow = true;
 
         handler.setInputAction( function ( e ) {

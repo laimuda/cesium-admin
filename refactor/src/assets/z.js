@@ -32,7 +32,7 @@ define( [
             textArea.select();
 
             try {
-                var successful = document.execCommand('copy');
+                var successful = document.execCommand( 'copy' );
                 var msg = successful ? '成功复制到剪贴板' : '该浏览器不支持点击复制到剪贴板';
                 // alert(msg);
             } catch (err) {
@@ -76,6 +76,10 @@ define( [
                     wscript.SendKeys( "{F11}" );
                 }
             }
+        },
+
+        support: {
+            chrome: false
         }
     };
 } );

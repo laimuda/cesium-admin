@@ -7,6 +7,7 @@ define( [
     'use strict';
 
     return new EntityCtl( {
-        detail: '全部风险点'
+        detail: '全部风险点',
+        show: false,
     } );
 } );
