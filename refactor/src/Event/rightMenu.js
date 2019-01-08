@@ -12,7 +12,8 @@ define( [
         var $menu = $( '.right-menu' );
         var ACTIVE = 'active';
 
-        // 控制是否显示隐藏 ****
+        // 控制是否显示隐藏
+        // @important
         rightClick.isShow = true;
 
         handler.setInputAction( function ( e ) {
@@ -25,11 +26,11 @@ define( [
                 left: e.position.x + 20 - 3
             } ).addClass( ACTIVE );
 
-        }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        }, Cesium.ScreenSpaceEventType.RIGHT_CLICK );
 
         handler.setInputAction( function ( e ) {
             $menu.removeClass( ACTIVE );
-        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK );
     }
 
     return rightClick;

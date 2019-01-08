@@ -4,6 +4,7 @@
 @import url( '../../src/UI/toolbar.less' );
 @import url( './loadingBar.less' );
 @import url( '../../src/UI/icon.less' );
+@import url( './navigationContainer.less' );
 
 body {
     flex-flow: column;
@@ -235,11 +236,6 @@ blockquote {
     overflow: auto;
 }
 
-/* 右边的地图控件 */
-.cesium-viewer-navigationContainer {
-    top: auto;
-    bottom: 0;
-}
 
 /* 工程进度数据 */
 .show-data.active {
@@ -318,7 +314,6 @@ blockquote {
         }
     }
 }
-
 #gcjd {
     .item {
 
@@ -411,7 +406,23 @@ blockquote {
     }
 }
 
-/* 隐藏信息栏 */
+/* 隐藏信息栏-点击 entity 点出现 */
 .cesium-viewer-infoBoxContainer {
-    display: none;
+    // display: none;
+    .cesium-infoBox {
+        top: 15px;
+    }
+}
+
+/* 视频播放器 */
+#znvPlayer {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    // height: 200px;
+    z-index: 1000;
+    background-color: #545454;
+    box-shadow: 0 0 10px 1px #000;
+    border-radius: 2px;
 }

@@ -34,9 +34,11 @@ define( [
                 vCount: opts.count,
                 vids: opts.ids,
                 vcurIds: opts.curIds,
+                vurls: opts.urls,
                 vclong: opts.clong,
                 vclaitu: opts.claitu,
                 count: count++,
+                vdata: opts.data,
                 billboard : {
                     image : opts.image || '/resource/images/icon/monitor-Point.png',
                     show : false,
@@ -49,8 +51,14 @@ define( [
                 index = this.findIndex( function ( item ) {
                     return item._vclong === entity._vclong && item._vclaitu === entity._vclaitu;
                 } );
+                this._entities[ index ]._znvEntities.push( entity );
+                entity._znvEntities = this._entities[ index ]._znvEntities;
                 this._entities[ index ] = entity;
             } else {
+                var znvEntities = entity._znvEntities = new EntityCtl( {
+                    detail: 'entities->entities'
+                } );
+                znvEntities.push( entity );
                 this._entities.push( entity );
             }
 
@@ -67,14 +75,39 @@ define( [
             return this;
         },
 
-        play: api.playVideo,
+        // play: api.playVideo,
+        play: function ( url ) {
+            window.setTimeout( function () {
+                $( '#znvPlayer' ).remove();
+                var $video = $(
+                    '<video id="znvPlayer" controls autoplay>' +
+                        '<source src="' + url + '" type="application/x-mpegURL"></source>' +
+                    '</video>'
+                );
+                $( '.cesium-infoBox' ).append( $video );
+
+                // 视频监控
+                var player = new EZUIPlayer( 'znvPlayer' );
+                console.log( 'player:', player );
+
+                player.on( 'play', function() {
+                    // videoCtl.play();
+                    console.log( 'player:play' );
+                } );
+                player.on( 'pause', function() {
+                    console.log( 'player:pause' );
+                } );
+                player.on( 'error', function() {
+                    console.log( 'player:error' );
+                } );
+            }, 1 );
+        },
 
         pause: function () {
             return this;
         },
 
         close: function () {
-
             return this;
         }
     } );

@@ -1,3 +1,8 @@
+/**
+ * @file 大屏预览
+ * @description 对应 example/js/bigIndex.js example/index.jsp
+ * @override
+ */
 require.config( {
     waitSeconds: 30000,
     paths: {
@@ -16,15 +21,15 @@ require.config( {
         'riskEntities': './var/entities/risk',
         'ZnvUrls': './config/layerUrl',
         'api': './API/index',
-        'layerConfig': './config/layerConfig',
+        // 'layerConfig': './config/layerConfig',
 
-        'cameraCtl': './Model/cameraCtl',
+        'cameraCtl': './bigIndex/cameraCtl',
         'layerCtl': './Model/layerCtl',
-        'videoCtl': './Model/videoCtl',
-        'lsCtl': './Model/lsCtl',
-        'coordinate': './Model/coordinate',
-        'pickupCtl': './Model/pickupCtl',
-        'locCtl': './Model/locCtl',
+        // 'videoCtl': './Model/videoCtl',
+        // 'lsCtl': './Model/lsCtl',
+        // 'coordinate': './Model/coordinate',
+        // 'pickupCtl': './Model/pickupCtl',
+        // 'locCtl': './Model/locCtl',
 
         'EntityCtl': './Class/EntityCtl',
         'LayerCtl': './Class/LayerCtl',
@@ -40,11 +45,7 @@ require.config( {
 } );
 
 require( [
-    './Event/onload',
-
-    './Event/ready',
-    './Event/initView',
-    './UI/bindDom'
-], function ( onload ) {
-    window.onload = onload
+    './bigIndex/ready'
+], function () {
+    // window.onload = onload
 } );

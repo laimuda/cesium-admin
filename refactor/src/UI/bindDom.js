@@ -1,5 +1,5 @@
 /**
- * @file UI 绑定事件
+ * @file UI 绑定事件, 一些逻辑, 例如: 全选, 反选. 点击触发 data-item 事件
  */
 define( [
     '../domEventMap',
@@ -41,7 +41,7 @@ define( [
 
         // 点击遮罩层使子选项全部消失
         $mask.click( function () {
-            $btnItems.removeClass( ACTIVE );
+            $toolbar.find( '.btn-item:not(.toggle)' ).removeClass( ACTIVE );
             $mask.removeClass( ACTIVE );
             reClass();
             $showData.removeClass( ACTIVE );
@@ -79,7 +79,8 @@ define( [
 
         // .item不冒泡, 遮罩成消失 父元素失去 active
         $btnItems.click( function () {
-            $( this ).toggleClass( ACTIVE ).siblings( '.btn-item' ).removeClass( ACTIVE );
+            $( this ).toggleClass( ACTIVE )
+                .siblings( '.btn-item:not(.toggle)' ).removeClass( ACTIVE );
         } );
         // 显示隐藏遮罩层
         $( '.opts>ul:not(.sels)>.item' ).click( function () {
@@ -143,13 +144,13 @@ define( [
         } );
 
         // 工程所有风险点
-       $jcdRisk.click( function () {
+        $jcdRisk.click( function () {
             var $self = $( this );
             var val = $self.find( 'input' ).prop( CHECKED );
             var $sibs = $self.siblings( '.item' );
             $sibs.find( 'input' ).prop( CHECKED, val );
         } );
-       $jcdRisk.siblings( '.item' ).click( function () {
+        $jcdRisk.siblings( '.item' ).click( function () {
             var $self = $( this );
             var val = $self.find( 'input' ).prop( CHECKED );
 

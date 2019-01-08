@@ -1,5 +1,5 @@
 /**
- * @file 视频监控
+ * @file 量算功能
  */
 define( [
     'Cesium',

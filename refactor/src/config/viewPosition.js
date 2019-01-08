@@ -80,7 +80,7 @@ define( [
             }
         },
 
-        // TODO: 与三维地震联动
+        // 联动模式
         linkage: {
             destination: new Cartesian3(
                 -2407603.334853231,

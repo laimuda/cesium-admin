@@ -1,5 +1,5 @@
 /**
- * @file 视频监控
+ * @file 坐标定位
  */
 define( [
     'Cesium',

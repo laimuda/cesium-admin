@@ -72,7 +72,6 @@ define( [
 
             // 判断是否第一次加载
             if ( this.underground._isLoad ) {
-                console.log( 'layers', layerCtl.udCtl._layers );
                 this.turn( false ); // 隐藏其他
                 this.setView( 'underground' );
                 this.setUdConfig( true );
@@ -84,17 +83,20 @@ define( [
             this.underground._isLoad = true;
 
             // 加载地下图层
+            $( '#loadingbar' ).show();
             var fns = layers.map( function ( name ) {
                 return viewer.scene.addS3MTilesLayerByScp(
                     ZnvUrls.ip_2 + ZnvUrls[ name + 'Promise' ], {
                     name: name
                 } );
             } );
-
+            this.setUdConfig( true );
             layerCtl.all( fns, _done.bind( this ) );
 
             function _done ( layers ) {
                 console.log( '>>> Loaded underground layers' );
+
+                $( '#loadingbar' ).hide();
                 layerCtl.udCtl._layers = layers;
 
                 this.turn( false ); // 隐藏其他
@@ -107,7 +109,7 @@ define( [
                 }
 
                 // 配置
-                this.setUdConfig( true );
+                // this.setUdConfig( true );
             }
 
             return this;
@@ -120,6 +122,8 @@ define( [
             var $dt = $( '#dtMap' );
             var $sz = $( '#sandzMap' );
             var h = $sz.height();
+
+            this.setUdConfig( false );
 
             this._curModel = LINK;
 
@@ -141,15 +145,14 @@ define( [
                 return;
             }
 
-            $( '#toolbar' ).find( '.btn-item:not(.change-model) .mask' ).show();
-            $( '#loadingbar' ).show();
-
             $dt.height( 0 );
 
             if ( isLoadForChrome ) {
                 return;
             }
 
+            $( '#loadingbar' ).show();
+            $( '#toolbar' ).find( '.btn-item:not(.change-model) .mask' ).show();
             var $iframe = $( '#content' );
 
             window.setTimeout( function () {

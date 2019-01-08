@@ -135,17 +135,16 @@ define( [
             showOth(); // 显示其他按钮
         },
         udModel: function ( key ) {
-            $( '.chaneg-view .mask' ).show();
             // 关闭其他的按钮, 关闭 insar 按钮
             $( '#toolbar .btn-item:not(.change-model) .mask' ).show();
-            $( '#toolbar .o-insar' ).hide();
-            $( '.cesium-viewer-navigationContainer' ).hide();
-            $( '#toolbar .o-underground' ).show();
+            $( '#toolbar .o-insar' ).hide(); // insar 子菜单
+            $( '#toolbar .o-underground' ).show(); // insar 子菜单
+            $( '.cesium-viewer-navigationContainer' ).hide(); // 地图控件
 
             _changeModel();
             exitLinkAge();
             cameraCtl.changeModel( 'underground' );
-            layerCtl.udCtl.turn( true ); // 显示地下图层
+            layerCtl.udCtl.turn( true ); // 默认显示地下图层
         },
         toCAD: function ( value, key ) {
             if ( cameraCtl._curModel !== 'default' ) {
@@ -279,6 +278,10 @@ define( [
         /* 视频监控 */
         isShowVideo: function ( val ) {
             videoCtl.turn( !val );
+            if ( val ) {
+                $( '#znvPlayer' ).siblings( '.cesium-infoBox-close' ).click();
+                $( '#znvPlayer' ).remove();
+            }
         },
 
         /* 工具箱 */

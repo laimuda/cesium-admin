@@ -2,7 +2,7 @@
  * @file api
  */
 define( [
-    './config/apiUrl',
+    './API/apiUrl',
     'ZnvUrls'
 ], function ( apiUrl, ZnvUrls ) {
     'use strict';
@@ -16,7 +16,7 @@ define( [
                 return data;
             }
         } ).fail( function ( error ) {
-            console.error( '<<< ' + url + ' load fail' );
+            console.error( '<<< ' + url + ' load fail', error );
         } );
     }
 
@@ -42,7 +42,7 @@ define( [
     var apis = 'getCurRisk getAllRisk getPoint getLine getVideoMsg ' +
         'getProgressData rateEx curProgressRiskMsg';
 
-    $.each( apis.split( ' ' ), function ( index, item ) {
+    $.each( apis.split( ' ' ), function ( _, item ) {
         api[ item ] = function ( params ) {
             return post( apiUrl[ item ], params ).then( log( item ) );
         }
@@ -56,6 +56,8 @@ define( [
                 try {
                     data = JSON.parse( data );
                 } catch ( e ) { }
+            } else {
+                console.warn( '<<< ' + msg + ' error' );
             }
 
             return data;

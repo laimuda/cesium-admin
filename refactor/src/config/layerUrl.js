@@ -7,7 +7,8 @@ define( [
 
         ip_1: 'http://192.168.10.214:8090',
         // 图层使用的 ID
-        ip_2: 'http://120.78.73.154:8090',
+        // ip_2: 'http://120.78.73.154:8090',
+        ip_2: 'http://120.236.232.170:28090',
 
         // 获取附近建筑物
         getCurBuild:
@@ -92,6 +93,11 @@ define( [
             '_JK_LiZhuGB@jikeng_6qu/config',
         NeiCheng6Promise:
             '/iserver/services/3D-JiKeng6QuBIM/rest/realspace/datas/常规模型' +
-            '_JK_NeiCheng6@jikeng_6qu/config'
+            '_JK_NeiCheng6@jikeng_6qu/config',
+
+        fzPromise:
+            '/iserver/services/3D-ChunFengSuiDao/rest/realspace/datas/FZ001@ChunFengLu3D01/config',
+        dtPromise:
+            '/iserver/services/3D-ChunFengSuiDao/rest/realspace/datas/DT001@ChunFengLu3D01/config'
     };
 } );

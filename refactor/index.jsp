@@ -20,6 +20,8 @@
     <script type="text/javascript" src="${contextpath}/resource/js/znvweb_plugin.js"></script>
     <script src="${contextpath}/resource/js/znvweb_lib.js"></script>
     <script src="${contextpath}/resource/assets/supermap/SuperMap.Include.js"></script>
+    <script src="${contextpath}/site/PVIP/constructionSite/js/hls.min.js"></script>
+    <script type="text/javascript" src="${contextpath}/site/PVIP/constructionSite/js/ezuikit.js"></script>
     <!-- <script src="./config.js"></script> -->
 
     <script type="text/javascript" src="${contextpath}/resource/assets/require.min.js" data-main="./src/main.js"></script>
@@ -178,7 +180,7 @@
         </div>
 
         <!-- 建筑 -->
-        <div class="btn-item icon build no-opts" data-item="isShowOfBuild">
+        <div class="btn-item icon build no-opts active toggle" data-item="isShowOfBuild">
             <div class="mask"></div>
             <button class="btn">建筑</button>
         </div>
@@ -329,28 +331,6 @@
     <!-- 地图容器 -->
     <div class="wrap">
 
-        <!-- longding -->
-        <div id='loadingbar' class="spinner">
-            <div class="spinner-container container1">
-                <div class="circle1"></div>
-                <div class="circle2"></div>
-                <div class="circle3"></div>
-                <div class="circle4"></div>
-            </div>
-            <div class="spinner-container container2">
-                <div class="circle1"></div>
-                <div class="circle2"></div>
-                <div class="circle3"></div>
-                <div class="circle4"></div>
-            </div>
-            <div class="spinner-container container3">
-                <div class="circle1"></div>
-                <div class="circle2"></div>
-                <div class="circle3"></div>
-                <div class="circle4"></div>
-            </div>
-        </div>
-
         <!-- 右键菜单 -->
         <div class="right-menu" oncontextmenu="event.preventDefault()">
             <ul class="clearfix">
@@ -369,6 +349,28 @@
         <div id="sandzMap" class="fullSize">
             <div class="mask"></div>
 
+            <!-- longding -->
+            <div id='loadingbar' class="spinner">
+                <div class="spinner-container container1">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+                <div class="spinner-container container2">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+                <div class="spinner-container container3">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+            </div>
+
             <!-- 量算容器 -->
             <div id="measure" class="map-tool">
                 <button class="btn-item" id="distance" data-item="lsDis">测距</button>
@@ -376,8 +378,8 @@
                 <button class="btn-item" id="height" data-item="lsHeight">测高</button>
                 <button class="btn-item" id="clear" data-item="lsClear">清除</button>
                 <select id="selOpt1" class="select">
-                    <option selected value="0">空间量算</option>
-                    <option value="1">贴地量算</option>
+                    <option selected value="1">空间量算</option>
+                    <option value="2">贴地量算</option>
                 </select>
                 <button class="close" data-item="lsClose"></button>
             </div>

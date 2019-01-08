@@ -61,6 +61,7 @@ define( [
 
     $.extend( _fn, {
         addLayer: /* addS3MTilesLayerByScp */ null,
+        bigIndexPromise: null, // bigIndex 加载图层的 promise 对象
 
         /**
          * 等全部 promise 加载完执行
@@ -78,6 +79,7 @@ define( [
             _data: [],
             isLoaded: false, // insar 点信息是否请求
             api: null, // 获取 insar 数据的 promise 对象, 在获取数据时候赋值
+            _callback: $.Callbacks(),
 
             // 设置 insar 数据
             data: function ( data ) {
@@ -167,9 +169,19 @@ define( [
              */
             click: function ( fn ) {
 
-                if ( !this.handler) {
-                    this.handler = new Cesium.ScreenSpaceEventHandler( viewer.scene.canvas );
+                this._callback.add( fn );
+                if ( !this.init.isInit ) {
+                    this.init();
                 }
+                return this;
+            },
+
+            // 初始化点击事件
+            init: function () {
+
+                this.init.isInit = true;
+
+                this.handler = new Cesium.ScreenSpaceEventHandler( viewer.scene.canvas );
 
                 this.handler.setInputAction( function ( e ) {
                     if ( viewer._viewer.selectedEntity ) {
@@ -192,13 +204,9 @@ define( [
                         return id === item.smID;
                     } )[ 0 ];
 
-                    if ( typeof fn === 'function' ) {
-                        fn( e, _point );
-                    }
+                    this._callback.fire( e, _point );
 
                 }.bind( this ), Cesium.ScreenSpaceEventType.LEFT_CLICK );
-
-                return this;
             },
 
             // 解绑事件

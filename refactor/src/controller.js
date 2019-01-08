@@ -24,13 +24,14 @@ define( [
     'locCtl',
     'Bubble',
     'ZnvUrls',
-    'echarts'
+    'echarts',
+    'layerConfig'
 ], function ( Cesium, viewer, api, layerCtl, cameraCtl, lineEntities, pointEntities, zbRiskEntities,
         nbRiskEntities, allRiskEntities, riskEntities, insarLevel, rotate, moveFly, rightMenu,
-        videoCtl, lsCtl, layers, pickupCtl, locCtl, Bubble, ZnvUrls, echarts ) {
+        videoCtl, lsCtl, layers, pickupCtl, locCtl, Bubble, ZnvUrls, echarts, layerConfig ) {
     'use strict';
 
-    const UPSTEP = 1000000000, ACTIVE = 'active';
+    var UPSTEP = 1000000000, ACTIVE = 'active';
 
     var origin = window.location.origin;
 
@@ -176,7 +177,9 @@ define( [
                     vdata: obj,
                     vPosition: { x: x, y: y, z: 40 },
                     billboard: {
-                        image: origin + '/site/PVIP/for3D/webgl/examples/images/risk' + index + '.png',
+                        image: origin +
+                            '/site/PVIP/for3D/webgl/examples/images/risk' +
+                            index + '.png',
                         width: 20,
                         height: 20
                     },
@@ -315,6 +318,12 @@ define( [
     }
 
     function runVideo ( _viewer ) {
+
+        // 点击监控视频的关闭按钮, 上次 vidoe 播放器
+        $( '#dtMap' ).on( 'click', 'button.cesium-infoBox-close', function () {
+            $( '#znvPlayer' ).remove();
+        } );
+
         videoCtl.post().then( function ( data ) {
             // console.log( 'data:::', data );
 
@@ -329,8 +338,9 @@ define( [
             } );
             // 子菜单点击播放
             $t.on( 'mousedown', 'li img', function () {
-                console.log( '>>> Play', $( this ).data( 'devId' ) );
-                // videoCtl.play( $( this ).data( 'devId' ) );
+                console.log( '>>> Play', $( this ).data( 'hslUrl' ) );
+                videoCtl.play( $( this ).data( 'hslUrl' ) );
+                console.log( 'znvEntities:', this.znvEntities );
             } );
 
             // 遍历创建 entity
@@ -344,10 +354,12 @@ define( [
                     image = IMAGE;
                     videoCtl.remove( pMap[ 'p_' + clong ] );
                     pMap[ 'id_' + clong ].push( item.device_id );
+                    pMap[ 'url_' + clong ].push( item.chls );
                 } else {
                     pMap[ clong ] = claitu;
                     pMap[ 'c_' + clong ] = 1;
                     pMap[ 'id_' + clong ] = [ item.device_id ];
+                    pMap[ 'url_' + clong ] = [ item.chls ];
                     image = undefined;
                 }
 
@@ -363,8 +375,10 @@ define( [
                         count: pMap[ 'c_' + clong ],
                         ids: ids,
                         curIds: pMap[ 'id_' + clong ],
+                        urls: pMap[ 'url_' + clong ],
                         clong: +clong,
                         claitu: +claitu,
+                        data: item,
                         position: new Cesium.Cartesian3.fromDegrees(
                             +clong,
                             +claitu,
@@ -386,33 +400,40 @@ define( [
                     _entity._vclaitu,
                     10
                 );
+                // 这种方式计算不精确
                 var ve = Cesium.SceneTransforms
                     .wgs84ToWindowCoordinates( _viewer.scene, wgs );
-                var curIds = _entity._vcurIds;
+                // var curIds = _entity._vcurIds;
+
+                var urls = _entity._vurls;
+                var videoUrl = _entity._vdata.chls;
                 var count = _entity._vCount;
-                var x = ve.x;
-                var y = ve.y;
+                var x = /* ve.x */ e.position.x;
+                var y = /* ve.y */ e.position.y;
                 var r = 2 * Math.PI / count;
                 var _x, _y;
                 var hx = $t.width() / 2, hy = $t.height() / 2;
+                var $temp;
 
                 if ( !_entity._visMore ) { // 只有一个视频监控
-                    console.log( '>>> Play', curIds[ 0 ] );
-                    // videoCtl.play( curIds[ 0 ] );
+                    console.log( '>>> Play', videoUrl );
+                    videoCtl.play( videoUrl );
                 } else { // 多个视频监控
                     // 在屏幕绕原点弹出
                     // 需要获取屏幕坐标
                     $t.empty();
 
                     for ( i = 0; i < count; i++ ) {
-                        _x = R * Math.cos( r * i + Math.PI/2 ) + hx;
-                        _y = R * Math.sin( r * i + Math.PI/2 ) + hy - R/2 + W/2;
-                        $t.append( $( '<li>' ).append( $( '<img>', {
+                        _x = R * Math.cos( r * i + Math.PI/2 ) + hx + W/2;
+                        _y = R * Math.sin( r * i + Math.PI/2 ) + hy + R/2;
+                        $temp = $( '<li>' ).append( $( '<img>', {
                             src: SUBIMG
-                        } ).data( 'devId', curIds[ i ] ) ).css( {
+                        } ).data( 'hslUrl', urls[ i ] ) ).css( {
                             left: _x,
                             top: _y
-                        } ) );
+                        } );
+                        $temp[ 0 ].znvEntities = _entity._znvEntities;
+                        $t.append( $temp );
                     }
 
                     if ( $t.hasClass( ACTIVE ) && oldEn !== _entity ) {
@@ -451,6 +472,7 @@ define( [
             layerCtl.insar._layer._visible = false;
         } );
         // 获取 insar 数据, 比较慢
+        layerCtl.insarCtl.init(); // 初始化
         layerCtl.insarCtl.api = api.getInsarData().then( function ( data ) {
             if ( !layerCtl.insar ) { // 判断是否加载了 insar 图层
                 return;
@@ -465,22 +487,18 @@ define( [
                 $.each( insarLevel.map, function ( index ) {
                     insarLevel.map[ index ] = true;
                 } );
-                layerCtl.insarCtl.data( data ).click( function ( e, _point ) {
-                    console.log( '_point:', _point );
-
-                    // 显示提示栏
-                    // showTipForInsar();
-                } );
+                layerCtl.insarCtl.data( data );
             } );
         } );
     }
 
     function runBuild ( _viewer ) {
         layerCtl( 'build' ).then( function ( build ) {
-            build.brightness = 1.8;
-            build.contrast = 1.1;
-            build.saturation = 1.2;
-            build.gamma = 1.3;
+            // build.brightness = 1.8;
+            // build.contrast = 1.1;
+            // build.saturation = 1.2;
+            // build.gamma = 1.3;
+            $.extend( build, layerConfig.build );
 
             hideMask( '.build' );
         } );
@@ -540,11 +558,11 @@ define( [
 
         // 获取附近建筑 ID
         function processCompleted( queryEventArgs ) {
-            console.log( 'queryEventArgs:', queryEventArgs.result );
+            // console.log( 'queryEventArgs:', queryEventArgs.result );
 
             var i, j, result = queryEventArgs.result, SmID;
 
-            for(i = 0;i < result.recordsets.length; i++) {
+            for(i = 0; i < result.recordsets.length; i++) {
                 for(j = 0; j < result.recordsets[ i ].features.length; j++) {
                     // 暂时使用 SmUserID
                     SmID = result.recordsets[ i ].features[ j ].data.SmUserID;
@@ -598,7 +616,10 @@ define( [
     }
 
     function hideMask ( id ) {
-        if ( cameraCtl._curModel !== 'linkage' ) {
+
+        if ( cameraCtl._curModel === 'default' ||
+            ( cameraCtl._curModel === 'linkage' && window._Unity.loaded ) ) {
+
             $( id ).find( '.mask' ).hide();
         }
     }

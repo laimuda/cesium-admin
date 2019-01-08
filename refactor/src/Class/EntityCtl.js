@@ -10,6 +10,7 @@ define( [
         0: 'remove'
     };
 
+
     function EntityCtl ( opts ) {
         this._opts = opts;
         this._entities = [];
@@ -17,6 +18,8 @@ define( [
         this._pre = false;
         this.detail = opts.detail;
         this.handler = undefined;
+        this._callback = $.Callbacks();
+        this._isInit = false; // 是否注册点击事件
 
         if ( opts.show ) {
             this._show = true;
@@ -87,7 +90,7 @@ define( [
             } ).length > 0;
         },
 
-        // 或许元素索引
+        // 获取元素索引
         findIndex: function ( fn ) {
             var _index = -1;
             $.each( this._entities, function ( index, entity ) {
@@ -101,20 +104,27 @@ define( [
         // 点击事件
         click: function ( fn ) {
 
-            if ( this.handler == null ) {
-                this.handler = new Cesium.ScreenSpaceEventHandler( viewer.scene.canvas );
+            this._callback.add( fn );
+
+            if ( !this._isInit ) {
+                this.init();
             }
+            return this;
+        },
+
+        // 初始化点击事件
+        init: function () {
+            this._isInit = true;
+            this.handler = new Cesium.ScreenSpaceEventHandler( viewer.scene.canvas );
 
             this.handler.setInputAction( function ( e ) {
                 var _entity = viewer._viewer.selectedEntity;
 
-                if ( this.has( _entity ) && typeof fn === 'function' ) {
-                    fn( e, _entity );
+                if ( this.has( _entity ) ) {
+                    this._callback.fire( e, _entity );
                 }
 
             }.bind( this ), Cesium.ScreenSpaceEventType.LEFT_CLICK );
-
-            return this;
         },
 
         // 解绑事件

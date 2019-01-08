@@ -1,6 +1,10 @@
+/**
+ * @file ready 事件, 用于处理一些 DOM 的初始化以及注册 resize 事件
+ */
 define( [
     'z',
-], function( z ) {
+    'cameraCtl'
+], function( z, cameraCtl ) {
     'use strict';
 
     $( function () {
@@ -59,11 +63,17 @@ define( [
             top *= scalc;
             top = top / SCALC + 1;
 
+            // canvas 的尺寸变化
             $ce.css( {
                 width: w, height: h
             } ).attr( {
                 width: w, height: h
             } );
+
+            if ( cameraCtl._curModel !== 'linkage' ) { // 不是卷帘模式
+                $dtMap.height( h );
+                return;
+            }
 
             $fjx = $( '#fjx' ).css( {
                 top: top

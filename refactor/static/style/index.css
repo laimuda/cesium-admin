@@ -118,7 +118,7 @@ table {
   margin-left: 15px;
   cursor: pointer;
 }
-#toolbar .btn-item .btn:hover,
+#toolbar .btn-item:not(.toggle) .btn:hover,
 #toolbar .btn-item.active .btn {
   background-color: #E0E0E0;
   border: 1px solid #E0E0E0;
@@ -496,6 +496,9 @@ table {
   padding-left: 3px;
   margin-right: 16px;
 }
+#loadingbar {
+  z-index: 8;
+}
 .spinner {
   margin: auto;
   width: 60px;
@@ -706,6 +709,96 @@ table {
 .right-menu,
 #sandzMap .vctl {
   cursor: url('/resource/images/cursor/ico_choose.png'), auto;
+}
+/* 右边的地图控件 */
+.cesium-viewer-navigationContainer {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  height: 200px;
+}
+.sm-zoom {
+  height: 60px;
+  background-color: #fff;
+  visibility: initial;
+  background-image: none;
+  border-radius: 2px;
+}
+.sm-zoombar {
+  background-image: none;
+}
+.sm-zoomin {
+  background: url('../images/ico_enlarge.png') no-repeat center;
+}
+.sm-zoomout {
+  background: url('../images/ico_narrow.png') no-repeat center;
+}
+.sm-zoom::after {
+  content: "";
+  position: absolute;
+  width: 25px;
+  height: 1px;
+  background-color: #ccc;
+  top: 30px;
+  left: 2px;
+  z-index: 999;
+}
+.sm-compass {
+  right: 45px;
+  top: 48px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #fff;
+}
+.sm-compass-tilt {
+  width: 60px;
+  height: 60px;
+  background-image: none;
+}
+.sm-compass-outer-ring {
+  background-image: none;
+  display: none;
+}
+.arrows_e_active {
+  top: 18px;
+  left: 36px;
+  visibility: inherit;
+  background: url('../images/rotate_right-normal.png') no-repeat center;
+}
+.arrows_e_active:active {
+  background: url('../images/rotate_right-hover.png') no-repeat center;
+}
+.arrows_n_active {
+  top: 1px;
+  left: 18px;
+  visibility: inherit;
+  background: url('../images/compass.png') no-repeat 7px -9px;
+  transform: rotate(180deg);
+}
+.arrows_n_active:active {
+  background: url(../images/compass.png) no-repeat 8px 14px;
+  transform: rotate(0deg);
+}
+.arrows_s_active {
+  top: 36px;
+  left: 19px;
+  visibility: inherit;
+  background: url('../images/compass.png') no-repeat 7px -9px;
+}
+.arrows_s_active:active {
+  background: url(../images/compass.png) no-repeat 8px 14px;
+  transform: rotate(180deg);
+}
+.arrows_w_active {
+  top: 18px;
+  left: 0px;
+  visibility: inherit;
+  background: url('../images/rotate_left-normal.png') no-repeat center;
+}
+.arrows_w_active:active {
+  background: url('../images/rotate_left-hover.png') no-repeat center;
 }
 body {
   flex-flow: column;
@@ -927,11 +1020,6 @@ blockquote {
 #des {
   overflow: auto;
 }
-/* 右边的地图控件 */
-.cesium-viewer-navigationContainer {
-  top: auto;
-  bottom: 0;
-}
 /* 工程进度数据 */
 .show-data.active {
   transform: scale(1);
@@ -1073,7 +1161,18 @@ blockquote {
   padding: 12px 0;
   text-align: center;
 }
-/* 隐藏信息栏 */
-.cesium-viewer-infoBoxContainer {
-  display: none;
+/* 隐藏信息栏-点击 entity 点出现 */
+.cesium-viewer-infoBoxContainer .cesium-infoBox {
+  top: 15px;
+}
+/* 视频播放器 */
+#znvPlayer {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #545454;
+  box-shadow: 0 0 10px 1px #000;
+  border-radius: 2px;
 }
