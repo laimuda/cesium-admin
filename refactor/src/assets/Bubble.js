@@ -3,7 +3,9 @@ define([
 ], function () {
     'use strict';
 
-    function Bubble(scene, id) {
+    function Bubble(scene, id, _y, _x) {
+        _y = _y == null ? 70 : 70 + _y;
+        _x = _x == null ? 72 : 72 - _x;
         var container = document.getElementById(id);
         this.container = container;
         this.scenePosition = new Cesium.Cartesian3();
@@ -12,8 +14,8 @@ define([
             var canvasHeight = scene.canvas.height;
             var windowPosition = new Cesium.Cartesian2();
             Cesium.SceneTransforms.wgs84ToWindowCoordinates(scene, _this.scenePosition, windowPosition);
-            container.style.bottom = (canvasHeight - windowPosition.y + 70) + 'px';
-            container.style.left = (windowPosition.x - 72) + 'px';
+            container.style.bottom = (canvasHeight - windowPosition.y + _y) + 'px';
+            container.style.left = (windowPosition.x - _x) + 'px';
             container.style.visibility = "visible";
         });
         $(this.container).hide();

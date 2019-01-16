@@ -105,32 +105,32 @@
         <!-- 监测点 -->
         <div class="btn-item icon jcd">
             <div class="mask"></div>
-            <button class="btn">监测点</button>
+            <button class="btn">风险源</button>
             <div class="opts select">
                 <ul>
                     <li class="item" data-key="0" data-item="">
-                        检测点
+                        风险源
                         <ul class="sub">
                             <li class="item all-risk" data-key="0" data-item="allRisk">
                                 <span class='squaredTwo'>
                                     <input type="checkbox">
                                     <label class="check-icon"></label>
                                 </span>
-                                工程所有风险点
+                                工程所有风险源
                             </li>
                             <li class="item" data-key="1" data-item="zbRisk">
                                 <span class='squaredTwo'>
                                     <input type="checkbox">
                                     <label class="check-icon"></label>
                                 </span>
-                                周边风险点
+                                周边风险源
                             </li>
                             <li class="item" data-key="2" data-item="nbRisk">
                                 <span class='squaredTwo'>
                                     <input type="checkbox">
                                     <label class="check-icon"></label>
                                 </span>
-                                工程内部风险点
+                                工程内部风险源
                             </li>
                         </ul>
                     </li>
@@ -174,7 +174,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="item" data-key="2" data-item="showJcsj">检测数据</li>
+                    <li class="item" data-key="2" data-item="showJcsj">监测数据</li>
                 </ul>
             </div>
         </div>
@@ -414,6 +414,8 @@
                 <h4 id="title"></h4>
                 <div id="des" class="word"></div>
             </blockquote>
+            <blockquote id="bubble2" class="bubble clearfix">
+            </blockquote>
 
             <!-- 工程进度数据 -->
             <div id="gcjd" class="show-data">
@@ -460,10 +462,10 @@
                 </div>
             </div>
 
-            <!-- 检测数据 -->
+            <!-- 监测数据 -->
             <div id="jcsj" class="show-data">
                 <div class="container">
-                    <h4 class="tit">检测数据<span class="icon" data-item="hideJcsj"></span></h4>
+                    <h4 class="tit">监测数据<span class="icon" data-item="hideJcsj"></span></h4>
                     <div class="clearfix centent">
                         <div class="item topC">
                             <div class="tit">第三方监测</div>

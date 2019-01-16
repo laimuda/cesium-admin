@@ -15,7 +15,7 @@ require.config( {
         'allRiskEntities': './var/entities/allRisk',
         'riskEntities': './var/entities/risk',
         'ZnvUrls': './config/layerUrl',
-        'api': './API/index',
+        'api': './_api/index',
         'layerConfig': './config/layerConfig',
 
         'cameraCtl': './Model/cameraCtl',

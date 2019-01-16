@@ -75,7 +75,7 @@
 	<canvas id="myCanvas" style='width:0px;height:0px'></canvas>
 	<div class='mask'></div>
 </div>
-<div id="toolbar" style="position: absolute;left: 10px;top: 30px;z-index: 999">
+<div id="toolbar" style="position: absolute;left: 10px;bottom: 300px;z-index: 999">
 
     <div id="pannel" style="padding: 10px;">
         <div id="ground" class="col-sm-12">

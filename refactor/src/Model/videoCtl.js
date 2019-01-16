@@ -4,8 +4,10 @@
 define( [
     'Cesium',
     'EntityCtl',
-    'api'
-], function ( Cesium, EntityCtl, api ) {
+    'api',
+    'Bubble',
+    'viewer'
+], function ( Cesium, EntityCtl, api, Bubble, _viewer ) {
     'use strict';
 
     var entity, count = 0;
@@ -39,11 +41,11 @@ define( [
                 vclaitu: opts.claitu,
                 count: count++,
                 vdata: opts.data,
-                billboard : {
-                    image : opts.image || '/resource/images/icon/monitor-Point.png',
-                    show : false,
-                    width : 20,
-                    height : 20
+                billboard: {
+                    image: opts.image || '/resource/images/icon/monitor-Point.png',
+                    show: false,
+                    width: 20,
+                    height: 20
                 }
             } );
 
@@ -76,31 +78,41 @@ define( [
         },
 
         // play: api.playVideo,
-        play: function ( url ) {
-            window.setTimeout( function () {
-                $( '#znvPlayer' ).remove();
+        play: function ( url, _entity ) {
+            $( '#znvPlayer' ).remove();
                 var $video = $(
-                    '<video id="znvPlayer" controls autoplay>' +
+                    '<video id="znvPlayer" class="znv-player" controls autoplay>' +
                         '<source src="' + url + '" type="application/x-mpegURL"></source>' +
                     '</video>'
                 );
-                $( '.cesium-infoBox' ).append( $video );
+                // $( '.cesium-infoBox' ).append( $video );
+                $( '#sandzMap' ).append( $video );
+
+                if ( _entity !== undefined ) {
+                    var bubble = new Bubble( _viewer.scene, 'bubble2', 30, -10 );
+                    var bubbleposition = new Cesium.Cartesian3.fromDegrees(
+                        _entity._vclong,
+                        _entity._vclaitu,
+                        0
+                    );
+                    $( '#bubble2' ).html( $video );
+                    bubble.showAt( bubbleposition );
+                    _viewer.bubble2 = bubble;
+                }
 
                 // 视频监控
                 var player = new EZUIPlayer( 'znvPlayer' );
-                console.log( 'player:', player );
 
-                player.on( 'play', function() {
-                    // videoCtl.play();
-                    console.log( 'player:play' );
-                } );
-                player.on( 'pause', function() {
-                    console.log( 'player:pause' );
-                } );
-                player.on( 'error', function() {
-                    console.log( 'player:error' );
-                } );
-            }, 1 );
+                // player.on( 'play', function() {
+                //     // videoCtl.play();
+                //     console.log( 'player:play' );
+                // } );
+                // player.on( 'pause', function() {
+                //     console.log( 'player:pause' );
+                // } );
+                // player.on( 'error', function() {
+                //     console.log( 'player:error' );
+                // } );
         },
 
         pause: function () {

@@ -279,8 +279,8 @@ define( [
         isShowVideo: function ( val ) {
             videoCtl.turn( !val );
             if ( val ) {
-                $( '#znvPlayer' ).siblings( '.cesium-infoBox-close' ).click();
-                $( '#znvPlayer' ).remove();
+                $( '.cesium-infoBox-close' ).click();
+                $( '.znv-player' ).remove();
             }
         },
 

@@ -89,7 +89,9 @@ define( [
 
         // 点击风险点获取附近建筑物
         runGetCurBuild( _viewer );
+        // 点击风险点出现提示框
         showTipForRisk( _viewer );
+        // 检测数据
         getJcsjData( _viewer );
 
         $( '.change-view, .change-model, .tool' )
@@ -303,16 +305,18 @@ define( [
 
             // 绘制进度线
             function drawLine ( target, color ) {
-                target.add( {
-                    polyline: {
-                        positions: Cesium.Cartesian3.fromDegreesArrayHeights( target.sms ),
-                        height: 0, //离地高度
-                        width: 10, //线宽
-                        material: color,
-                        outline: false, //外边线
-                        outlineColor: Cesium.Color.BLACK
-                    }
-                } );
+                try {
+                    target.add( {
+                        polyline: {
+                            positions: Cesium.Cartesian3.fromDegreesArrayHeights( target.sms ),
+                            height: 0, //离地高度
+                            width: 10, //线宽
+                            material: color,
+                            outline: false, //外边线
+                            outlineColor: Cesium.Color.BLACK
+                        }
+                    } );
+                } catch ( e ) { }
             }
         } );
     }
@@ -336,11 +340,11 @@ define( [
             $t.mousedown( function () {
                 $( this ).removeClass( ACTIVE );
             } );
-            // 子菜单点击播放
+            // 子菜单点击播放, 多个 entity
             $t.on( 'mousedown', 'li img', function () {
                 console.log( '>>> Play', $( this ).data( 'hslUrl' ) );
-                videoCtl.play( $( this ).data( 'hslUrl' ) );
-                console.log( 'znvEntities:', this.znvEntities );
+                // console.log( 'znvEntities:', this.znvEntities, this._entity );
+                videoCtl.play( $( this ).data( 'hslUrl' ), this._entity );
             } );
 
             // 遍历创建 entity
@@ -413,11 +417,11 @@ define( [
                 var r = 2 * Math.PI / count;
                 var _x, _y;
                 var hx = $t.width() / 2, hy = $t.height() / 2;
-                var $temp;
+                var $temp, $img;
 
                 if ( !_entity._visMore ) { // 只有一个视频监控
                     console.log( '>>> Play', videoUrl );
-                    videoCtl.play( videoUrl );
+                    videoCtl.play( videoUrl, _entity );
                 } else { // 多个视频监控
                     // 在屏幕绕原点弹出
                     // 需要获取屏幕坐标
@@ -432,7 +436,9 @@ define( [
                             left: _x,
                             top: _y
                         } );
-                        $temp[ 0 ].znvEntities = _entity._znvEntities;
+                        $img = $temp.find( 'img' );
+                        $img[ 0 ].znvEntities = _entity._znvEntities;
+                        $img[ 0 ]._entity = _entity;
                         $t.append( $temp );
                     }
 
@@ -612,6 +618,8 @@ define( [
         var handler = new Cesium.ScreenSpaceEventHandler( _viewer.scene.canvas );
         handler.setInputAction( function ( e ) {
             viewer.bubble.visibility( false );
+            viewer.bubble2.visibility( false );
+            $( '#znvPlayer' ).remove(); // 删除视频监控
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK );
     }
 
@@ -825,6 +833,7 @@ define( [
         } );
 
         api.curProgressRiskMsg().then( function ( data ) {
+            // console.log( 'data:', data );
 
             var html = '';
 
@@ -835,15 +844,16 @@ define( [
                     '</li>';
             } );
 
-            $( '#jcsj .tb3 ul' ).html( html );
+            $( '#jcsj .tb3 .wxInfo' ).html( html );
         } );
 
         function _setTable ( id, data ) {
             var $trs = $( id );
             var trs = [ $trs.eq( 0 ).find( 'td' ), $trs.eq( 1 ).find( 'td' ) ];
-            var kMap = [ 'levelOneCount', 'levelTwoCount', 'levelThreeCount', 'levelFourCount' ];
+            // var kMap = [ 'levelOneCount', 'levelTwoCount', 'levelThreeCount', 'levelFourCount' ];
+            var kMap = [ 'levelFourCount', 'levelThreeCount', 'levelTwoCount', 'levelOneCount'  ];
 
-            // 修改第二个表格
+            // 修改表格
             $.each( data.warnWorkStat, function ( index, item ) {
                 $.each( kMap, function ( i, k ) {
                     trs[ index ].eq( i + 1 ).text( item[ k ] );

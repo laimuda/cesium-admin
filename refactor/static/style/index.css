@@ -1162,15 +1162,16 @@ blockquote {
   text-align: center;
 }
 /* 隐藏信息栏-点击 entity 点出现 */
+.cesium-viewer-infoBoxContainer {
+  display: none;
+}
 .cesium-viewer-infoBoxContainer .cesium-infoBox {
   top: 15px;
 }
 /* 视频播放器 */
 #znvPlayer {
-  position: absolute;
-  top: 30px;
   left: 0;
-  width: 100%;
+  width: 300px;
   z-index: 1000;
   background-color: #545454;
   box-shadow: 0 0 10px 1px #000;
